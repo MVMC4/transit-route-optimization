@@ -1,0 +1,20 @@
+# Maven target folder
+/target/
+
+# Compiled Java classes
+*.class
+
+# JAR files
+*.jar
+
+# IDE files
+*.iml
+/.idea/
+/.vscode/
+
+# OS files
+.DS_Store
+
+# Application properties (if it contains credentials)
+src/main/resources/application.properties
+
