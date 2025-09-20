@@ -15,7 +15,7 @@ sudo docker stop $APP_NAME || true
 sudo docker rm $APP_NAME || true
 
 echo "▶️ Starting new container..."
-sudo docker run -d -p ${APP_PORT}:8080 --name $APP_NAME $APP_NAME
+sudo docker compose run -d -p ${APP_PORT}:8080 --name $APP_NAME $APP_NAME
 
 echo "✅ Deployment complete!"
 echo "Test the API with:"

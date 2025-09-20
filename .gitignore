@@ -16,5 +16,5 @@
 .DS_Store
 
 # Application properties (if it contains credentials)
-src/main/resources/application.properties
+/backend/src/main/resources/application.properties
 
