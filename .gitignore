@@ -18,3 +18,7 @@
 # Application properties (if it contains credentials)
 /backend/src/main/resources/application.properties
 
+# Dashboard
+/dashboard/node_modules
+/dashboard/dist
+/dashboard/.env
