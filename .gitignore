@@ -1,5 +1,5 @@
 # Maven target folder
-/target/
+/backend/target/
 
 # Compiled Java classes
 *.class
