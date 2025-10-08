@@ -1,0 +1,93 @@
+#Git flow to server - pc
+From main pc
+
+git add .
+git commit -m "Update dashboard UI"
+git push origin main
+
+
+From SSH'd pc
+
+cd ~/route-api/dashboard
+git pull origin main
+./deploy.sh
+
+
+The new version will be rebuilt and served.
+This setup lets you develop on your main PC and deploy updates on the server via Docker, exactly like Firebase hosting.
+
+#Git pushing
+Committing a Single File in Git
+To commit only one file in Git, you can use the command line to stage and commit that specific file. This is useful when you want to keep your commits clean and focused.
+
+Example
+
+git add path/to/your/file.py
+git commit -m "Your commit message here"
+git push origin branch-name
+
+In this example, replace path/to/your/file.py with the actual path to your file, and branch-name with the name of the branch you want to push to.
+
+Steps to Commit Only One File
+
+Stage the File: Use the git add command to stage the specific file you want to commit.
+
+git add path/to/your/file.py
+Commit the File: Use the git commit command with a message to commit the staged file
+git commit -m "Your commit message here"
+
+Push the Commit: Use the git push command to push your commit to the remote repository.
+
+git push origin branch-name
+
+Important Considerations
+
+Check Staged Files: Before committing, you can check which files are staged using git status.
+
+git status
+
+Unstage Files if Needed: If you have accidentally staged other files, you can unstage them using git reset HEAD <file>.
+
+git reset HEAD path/to/other/file.py
+Direct Commit: You can also directly commit a file without staging it first by specifying the file in the git commit command.
+
+git commit path/to/your/file.py -m "Your commit message here"
+By following these steps, you can efficiently manage your commits and ensure that only the intended changes are included
+
+#Git push conventions!
+
+A git push operation primarily involves pushing local branches or tags to a remote repository. The "naming scheme" in this context typically refers to the conventions used for naming the branches that are being pushed. Adhering to a consistent branch naming convention is crucial for maintaining a well-organized and understandable Git repository, especially in team environments.
+Here are common elements and best practices for Git branch naming conventions:
+
+1. Categorization/Prefixes:
+Use prefixes to indicate the type of work being done on the branch. Common prefixes include:
+	feature/: For new features (e.g., feature/user-authentication).
+	bugfix/: For fixing bugs (e.g., bugfix/login-issue).
+	hotfix/: For urgent bug fixes on production (e.g., hotfix/critical-security-patch).
+	release/: For release preparation (e.g., release/v1.2.0).
+	chore/: For maintenance tasks, build process changes, etc. (e.g., chore/update-dependencies).
+	refactor/: For code refactoring (e.g., refactor/database-layer).
+2. Descriptive and Concise Names:
+	The name should clearly and concisely describe the purpose of the branch.
+	Avoid overly long or vague names.
+3. Use Hyphens for Separation (Kebab Case):
+	Use hyphens (-) to separate words in the branch name for readability (e.g., feature/add-user-profile). This is often referred to as "kebab case."
+4. Lowercase Alphanumeric Characters:
+	Stick to lowercase letters (a-z) and numbers (0-9).
+	Avoid special characters, spaces, or underscores, as they can lead to issues or be less readable across different systems.
+5. Include Issue/Ticket Numbers (Optional but Recommended):
+	If using a project management tool, include the relevant issue or ticket number in the branch name for easy traceability (e.g., feature/JIRA-123-new-dashboard).
+6. Avoid Redundancy:
+	Do not include unnecessary or redundant information in the name.
+	Example Naming Scheme:
+Code
+
+<category>/<issue-id>-<short-description>
+
+Examples:
+	feature/auth-login-page
+	bugfix/fix-header-alignment
+	hotfix/security-vulnerability-patch
+	release/v2.1.0
+	chore/update-node-modules
+	feature/JIRA-456-implement-search-filter
