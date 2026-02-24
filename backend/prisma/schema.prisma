@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Route {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  nodes       Node[]
+}
+
+model Node {
+  id        Int      @id @default(autoincrement())
+  routeId   Int
+  label     String
+  name      String
+  lat       Float
+  long      Float
+  orderNum  Int
+  geom      Unsupported("geometry(Point, 4326)")
+
+  route     Route     @relation(fields: [routeId], references: [id])
+}

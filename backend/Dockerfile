@@ -1,5 +1,21 @@
-FROM openjdk:17-jdk-slim
+FROM node:20-alpine
+
+# Install bash and curl for wait-for-it.sh
+RUN apk add --no-cache bash curl
+
 WORKDIR /app
-COPY target/route-api-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+# Prisma client generation
+RUN npx prisma generate
+
+# Next.js build
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

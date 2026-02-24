@@ -1,23 +1,30 @@
-version: "3.8"
-services:
-  mongodb:
-    image: mongo:6.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
+version: "3.9"
 
-  route-api:
-    build: .
-    container_name: route-api
-    ports:
-      - "8080:8080"
+services:
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: transit_postgis
+    restart: always
     environment:
-      SPRING_DATA_MONGODB_HOST: mongodb
-      SPRING_DATA_MONGODB_PORT: 27017
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: transit
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: transit_backend
     depends_on:
-      - mongodb
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/transit
+    ports:
+      - "3000:3000"
+    # Wait for DB to be ready before running migrations & start
+    command: sh -c "./wait-for-it.sh db:5432 -- npx prisma migrate deploy && npm start"
 
 volumes:
-  mongo-data:
-
+  pgdata:
