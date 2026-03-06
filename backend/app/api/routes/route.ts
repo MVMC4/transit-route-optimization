@@ -8,11 +8,23 @@ const createSchema = z.object({
 });
 
 export async function GET() {
+  console.log("→ GET /api/routes called");
+
   try {
+    console.log("Calling RouteService.listRoutes() …");
     const routes = await RouteService.listRoutes();
+    console.log(`→ Found ${routes.length} routes`);
     return NextResponse.json(routes);
   } catch (err) {
-    return NextResponse.json({ error: "Failed to fetch routes" }, { status: 500 });
+    console.error("!!! ERROR in GET /api/routes !!!");
+    console.error(err);
+    if (err instanceof Error) {
+      console.error(err.stack);
+    }
+    return NextResponse.json(
+      { error: "Failed to fetch routes", details: err?.message },
+      { status: 500 }
+    );
   }
 }
 

@@ -2,34 +2,39 @@ import { NextRequest, NextResponse } from "next/server";
 import { NodeService } from "@/lib/services/node-service";
 import { z } from "zod";
 
-const schema = z.object({
-  lat: z.number(),
-  long: z.number(),
-  name: z.string(),
-  orderNum: z.number(),
+const createSchema = z.object({
+  name: z.string().min(1),
+  lat: z.coerce.number(),
+  long: z.coerce.number(),
+  orderNum: z.coerce.number().int().positive(),
 });
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { routeId: string } }
+  context: { params: Promise<{ routeId: string }> }
 ) {
-  const { routeId } = params;
-  const nodes = await NodeService.listNodes(Number(routeId));
-  return NextResponse.json(nodes);
+  try {
+    const { routeId } = await context.params;
+    const nodes = await NodeService.listNodes(Number(routeId));
+    return NextResponse.json(nodes);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to load nodes" }, { status: 500 });
+  }
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { routeId: string } }
+  context: { params: Promise<{ routeId: string }> }
 ) {
   try {
+    const { routeId } = await context.params;
     const body = await request.json();
-    const data = schema.parse(body);
-
-    await NodeService.createNode(Number(params.routeId), data);
-
-    return NextResponse.json({ message: "Node created" });
-  } catch (err) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const data = createSchema.parse(body);
+    await NodeService.createNode(Number(routeId), data);
+    return NextResponse.json({ message: "Node created successfully" });
+  } catch (err: any) {
+    console.error(err);
+    return NextResponse.json({ error: err.message || "Failed to create node" }, { status: 400 });
   }
 }

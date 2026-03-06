@@ -1,30 +1,16 @@
-version: "3.9"
-
 services:
   db:
     image: postgis/postgis:15-3.4
-    container_name: transit_postgis
+    container_name: transit-db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: transit
+      - POSTGRES_USER=transitsym
+      - POSTGRES_PASSWORD=metro
+      - POSTGRES_DB=transit
     ports:
-      - "5432:5432"
+      - "6000:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  backend:
-    build: .
-    container_name: transit_backend
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/transit
-    ports:
-      - "3000:3000"
-    # Wait for DB to be ready before running migrations & start
-    command: sh -c "./wait-for-it.sh db:5432 -- npx prisma migrate deploy && npm start"
+      - transit_system:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  transit_system:
