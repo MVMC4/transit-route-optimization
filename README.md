@@ -1,13 +1,6 @@
 # TransitOS / Tsela
 
-<!--
-  SCREENSHOT PLACEHOLDER: a screenshot or short GIF of the marketing homepage
-  or rider map belongs here before this repo is shown publicly. It wasn't
-  captured in this session — see the work order for why — but the image tag
-  below is ready for it:
-
-  ![TransitOS rider map and route planning](docs/media/screenshot.png)
--->
+![Tsela marketing homepage](docs/assets/screenshots/marketing-home.png)
 
 A Gaborone-first platform for finding your way around an informal transit network that, until now, only lived in people's heads. TransitOS turns the combi routes locals already know into a searchable map: pick a place, get real road-following directions, see where to board and where to ask the driver to stop.
 
@@ -18,6 +11,26 @@ A Gaborone-first platform for finding your way around an informal transit networ
 Gaborone's combis run understood, repeatable corridors, but that knowledge is local and informal. Ask "which combi gets me near the mall, and where do I get off?" and there's usually no map to answer it — just word of mouth. TransitOS makes that shared local knowledge visible and searchable: a rider picks an origin and destination and gets real combi options with a road-following route; a field operator can record a corridor by walking or riding it; community reports add current fare and crowding context; and the same API is open to anyone who wants to build on top of it.
 
 It's also a working example of building a small platform properly: separate deployable surfaces instead of one tangled app, an API that's actually documented (not just annotated), sessions that get verified server-side rather than trusted on cookie presence, and honest docs about what's production-ready versus scaffolded.
+
+## Screenshots
+
+Real captures from the running Compose stack, not mockups.
+
+| Developer portal | Operations dashboard |
+| --- | --- |
+| ![Developer portal — Fumadocs-based API reference and live demo console](docs/assets/screenshots/docs-landing.png) | ![Operations dashboard — routes, stops, network density, service health](docs/assets/screenshots/admin-dashboard.png) |
+
+**Rider app** — home, trip planning, the route list, community reports, and the rider guide:
+
+| Home | Plan a trip |
+| --- | --- |
+| ![Rider home](docs/assets/screenshots/rider-home.png) | ![Plan a trip](docs/assets/screenshots/rider-plan.png) |
+
+| Routes | Community |
+| --- | --- |
+| ![Routes](docs/assets/screenshots/rider-routes.png) | ![Community](docs/assets/screenshots/rider-community.png) |
+
+![Rider guide](docs/assets/screenshots/rider-guide.png)
 
 ## Documentation
 
