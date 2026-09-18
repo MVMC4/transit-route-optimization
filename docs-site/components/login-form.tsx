@@ -1,0 +1,45 @@
+"use client";
+
+/** Sign-in and registration form for developer access. */
+
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createBrowserSession, developerApi } from "../lib/developer-api";
+import { CopyButton } from "./copy-button";
+
+export function LoginForm() {
+  const router = useRouter();
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const demoEnabled = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+  const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL ?? "demo@tsela.local";
+  const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? "TselaDemo2026!";
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault(); setLoading(true); setError("");
+    try {
+      const response = mode === "register" ? await developerApi.register({ email, password, displayName }) : await developerApi.login({ email, password });
+      await createBrowserSession(response.token);
+      const requestedPath = new URLSearchParams(window.location.search).get("next");
+      const destination = requestedPath ? new URL(requestedPath, window.location.origin) : null;
+      const safePath = destination?.origin === window.location.origin
+        ? `${destination.pathname}${destination.search}${destination.hash}`
+        : "/console";
+      router.push(safePath);
+      router.refresh();
+    } catch (submitError: unknown) {
+      setError(submitError instanceof Error ? submitError.message : "Could not continue");
+    } finally { setLoading(false); }
+  }
+
+  function useDemo() {
+    setMode("login"); setEmail(demoEmail); setPassword(demoPassword); setError("");
+  }
+
+  return <div className="auth-card" id="access"><div className="auth-tabs"><button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")} type="button">Sign in</button><button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")} type="button">Create account</button></div>{demoEnabled && mode === "login" && <div className="auth-demo"><div><span>LOCAL DEMO</span><button type="button" onClick={useDemo}>Fill credentials</button></div><p><code>{demoEmail}</code><CopyButton value={demoEmail} /></p><p><code>{demoPassword}</code><CopyButton value={demoPassword} /></p></div>}<form onSubmit={submit}>{mode === "register" && <label>Name<input value={displayName} onChange={(event) => setDisplayName(event.target.value)} required minLength={2} autoComplete="name" /></label>}<label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={mode === "register" ? 10 : 1} autoComplete={mode === "register" ? "new-password" : "current-password"} /></label>{mode === "register" && <p className="auth-hint">Use at least 10 characters. Passwords are PBKDF2-hashed before storage.</p>}{error && <div className="auth-error">{error}</div>}<button className="console-primary" disabled={loading}>{loading ? "Securing your session…" : mode === "register" ? "Create developer account" : "Sign in to console"}</button>{loading && <div className="auth-progress"><span /></div>}</form><Link href="/recover">Forgot your password?</Link></div>;
+}
