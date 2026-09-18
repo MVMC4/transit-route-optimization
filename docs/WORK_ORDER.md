@@ -2,6 +2,8 @@
 
 **Status:** Active plan. UI and developer portal changes are implemented in the current feature branch; production identity and observability remain planned work.
 
+**Verified 2026-09-18 (commit pass for this branch):** `admin`, `marketing`, `rider`, and `docs-site` each build clean with `next build`; ESLint is clean except one pre-existing informational warning in `docs-site/postcss.config.mjs` (anonymous default export, not worth restructuring). `api` passes its full pytest suite (18 tests) and is clean under `ruff check`. No functional gaps were found beyond what this document already lists as remaining work. Two items are still open from this pass specifically: the root README has no real screenshot/GIF yet (placeholder comment left in place — capturing one needs the full Compose stack running, which wasn't done in this session), and `.github/PULL_REQUEST_TEMPLATE.md`, `LICENSE` (MIT), and `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) were added but have not been exercised by a real PR yet.
+
 ## Objective
 
 Deliver a Gaborone-first combi discovery product with trustworthy road-following routes, a clear rider journey, a useful contributor community, protected developer access, and an operable API. Keep the marketing site public and welcoming. Put developer registration/sign-in at the developer portal entrance; require a valid account session for the dashboard and every documentation page.

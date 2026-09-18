@@ -70,6 +70,16 @@ For production, split the flow:
 
 Add `expires_at`, `last_used_at`, scopes, and rotation/revocation metadata to API keys. Store only a one-way digest of each secret; show the raw key once. Existing `(apiKeyId, occurredAt)` indexing is a starting point, but query plans and write volume should decide later indexes or time partitioning. Do not put every API key into Prometheus labels.
 
+## API versioning and deprecation policy
+
+The public surface is `/v1` today; there is no `/v2` yet and no deprecation has happened. Adopt this policy before it's needed under pressure:
+
+- **Path-versioned, not header-versioned.** Keep the major version in the path (`/v1/...`) so cached responses, logs, and support requests are unambiguous without inspecting headers. A breaking change (removed field, changed type, changed auth requirement, changed error shape) requires a new `/v2` prefix; additive, backward-compatible fields do not.
+- **Deprecation window.** Once `/v2` ships, `/v1` stays live for a stated minimum window (proposed: 12 months for a metered public API) before removal. Announce the window at the moment `/v2` becomes generally available, not at the moment removal is decided.
+- **Signal deprecation in the response, not only in docs.** Add a `Deprecation` header (RFC 8594) and, once a removal date is fixed, a `Sunset` header on every deprecated-version response. Mirror the same dates in the Fumadocs reference page for that endpoint so the signal is visible to a human reading the docs and to a script reading headers.
+- **Track usage per version.** The `api_key_requests_total` metric (see below) should carry the version as a bounded dimension (`v1`, `v2`, …) so a deprecation decision is based on measured remaining traffic, not a guess.
+- **One deprecation at a time per endpoint family.** Do not stack multiple breaking changes into a single version bump; each breaking change gets its own version increment and its own sunset clock so consumers can migrate incrementally.
+
 ## Identity and token decision
 
 The application has three credential types and they must remain distinct:
@@ -77,6 +87,8 @@ The application has three credential types and they must remain distinct:
 - **Browser developer session:** currently a random opaque bearer token, persisted as a digest in `DeveloperSession`; the developer site stores the browser copy in an HttpOnly, SameSite cookie and proxies account API calls server-side. Expiry and database lookup allow immediate revocation. Do not return it to local storage.
 - **Public API key:** a separate random `tos_live_…` secret, stored by digest and sent in `X-API-Key`. It is not a JWT and must not be placed in a URL.
 - **Future identity-provider JWT:** if Supabase is adopted, FastAPI verifies provider access tokens using the configured issuer and audience, a fixed algorithm allowlist, the issuer JWKS, and `exp`/`nbf`. Resolve `sub` to an application account and perform role/scopes checks server-side. Refresh JWKS safely and fail closed for unknown or invalid keys.
+
+**Where secrets live:** none of the three credential types above should have their signing/hashing material in source control or in `compose.yaml` literals. The session-digest pepper, API-key hashing salt, and (if self-issued JWTs are ever added instead of Supabase-verified ones) the JWT signing key belong in environment variables injected at deploy time — `.env` locally (already gitignored), a secret manager (e.g. the hosting provider's built-in secrets store, or Vault/SOPS if self-managed) in production. Rotate the session/API-key hashing material on a defined schedule and on suspected compromise; rotation invalidates existing digests, so pair it with a re-auth path rather than a silent mass logout. If Supabase is adopted per [AUTH_DECISION.md](AUTH_DECISION.md), FastAPI never holds a private signing key at all — it only needs the issuer's public JWKS URL, which is not a secret.
 
 Keep opaque sessions for this app-owned developer console while they meet needs. They are easier to revoke and audit than self-contained JWT sessions. Use identity-provider JWTs only at the Supabase-to-API boundary if the selected design needs them; do not replace metered API keys with JWTs. If JWT sessions become a requirement, define key rotation, short access-token life, refresh-token rotation/reuse detection, logout/revocation, issuer/audience ownership, and claim versioning before implementation.
 
