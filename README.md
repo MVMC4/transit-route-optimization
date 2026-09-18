@@ -34,6 +34,7 @@ Real captures from the running Compose stack, not mockups.
 
 ## Documentation
 
+- [Demo credentials & endpoints](docs/DEMO_CREDENTIALS.md) — every URL, the demo account, first API call
 - [Architecture](ARCHITECTURE.md) — system boundaries, request/data flows, and production gaps
 - [Documentation index](docs/README.md) — complete reading map
 - [Contributing](CONTRIBUTING.md) — setup, route evidence, code standards, and pull-request expectations
