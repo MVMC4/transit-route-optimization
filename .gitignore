@@ -1,12 +1,3 @@
-# Maven target folder
-/backend/target/
-
-# Compiled Java classes
-*.class
-
-# JAR files
-*.jar
-
 # IDE files
 *.iml
 /.idea/
@@ -15,10 +6,32 @@
 # OS files
 .DS_Store
 
-# Application properties (if it contains credentials)
-/backend/src/main/resources/application.properties
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
 
-# Dashboard
-/dashboard/node_modules
-/dashboard/dist
+# Environment files
+.env
+.env.*
+!.env.example
+
+# JavaScript applications
+/web/node_modules/
+/web/.next/
+/admin/node_modules/
+/admin/.next/
+/marketing/node_modules/
+/marketing/.next/
+/rider/node_modules/
+/rider/.next/
+/docs-site/node_modules/
+/docs-site/.next/
+
+# Legacy applications retained only in Git history
+/dashboard/node_modules/
+/dashboard/dist/
 /dashboard/.env
