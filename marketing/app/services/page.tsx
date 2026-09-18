@@ -1,0 +1,30 @@
+/** Service catalog metadata and separate rider, operations, and developer products. */
+
+import type { Metadata } from "next";
+import { DOCS_URL, OPS_URL, RIDER_URL } from "../../lib/urls";
+
+export const metadata: Metadata = { title: "Product", description: "Explore Tsela's rider trip planner, community-checked network operations, and developer API.", alternates: { canonical: "/services" } };
+
+const services = [
+  { number: "01", title: "Rider map", status: "Live preview", copy: "Search every route, choose places directly on the map, widen the search area, and compare journeys that follow the road network.", action: "Plan a journey", href: RIDER_URL, tone: "cobalt" },
+  { number: "02", title: "Network operations", status: "Internal preview", copy: "Review routes, stops, evidence, and coverage in a focused workspace for the people maintaining the network.", action: "Open operations", href: OPS_URL, tone: "orange" },
+  { number: "03", title: "Transit data API", status: "Developer preview", copy: "Query routes, road geometry, nearby corridors, and journey options through one straightforward JSON contract.", action: "Read API docs", href: DOCS_URL, tone: "lime" },
+];
+
+export default function ServicesPage() {
+  return (
+    <>
+      <section className="inner-hero"><p className="section-number">THE TSELA PRODUCT</p><h1>One route network.<br />Three useful tools.</h1><p>Riders get clear trip choices. Community and operations keep the map accountable. Builders get a readable, metered API.</p></section>
+      <section className="service-list">
+        {services.map((service) => (
+          <article className={`service-row ${service.tone}`} key={service.title}>
+            <span className="service-number">{service.number}</span>
+            <div><span className="status-label">{service.status}</span><h2>{service.title}</h2><p>{service.copy}</p></div>
+            <a href={service.href}>{service.action} <span>↗</span></a>
+          </article>
+        ))}
+      </section>
+      <section className="roadmap-band"><p className="section-number">NEXT ACCESS LAYER</p><h2>Low-data and USSD channels come after the core network is trustworthy.</h2><p>That sequencing matters: reach is only useful when the underlying route knowledge is clear, fresh, and reviewable.</p></section>
+    </>
+  );
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Tsela route-loop mark</title>
+  <desc id="desc">A black rounded square containing a white curved route between lime and white stops.</desc>
+  <rect x="8" y="8" width="240" height="240" rx="70" fill="#11120f" stroke="#11120f" stroke-width="12"/>
+  <path d="M58 72h80c36 0 56 20 56 48s-20 44-52 44h-28c-28 0-44 16-44 40" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="58" cy="72" r="22" fill="#c8ff3d" stroke="#ffffff" stroke-width="10"/>
+  <circle cx="70" cy="204" r="22" fill="#ffffff" stroke="#ffffff" stroke-width="10"/>
+</svg>
