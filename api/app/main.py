@@ -1,0 +1,51 @@
+"""FastAPI composition root, middleware, and router registration."""
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+
+from app.config import get_settings
+from app.routers import community, dashboard, developer, health, pathfinding, public_v1, routes
+
+settings = get_settings()
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+    description="Geospatial route management, journey planning, and route optimization.",
+    docs_url="/api/docs" if settings.api_docs_enabled else None,
+    redoc_url="/api/redoc" if settings.api_docs_enabled else None,
+    openapi_url="/api/openapi" if settings.api_docs_enabled else None,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(health.router)
+app.include_router(routes.router)
+app.include_router(pathfinding.router)
+app.include_router(dashboard.router)
+app.include_router(community.router)
+app.include_router(developer.router)
+app.include_router(public_v1.router)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Apply conservative browser defenses to JSON and generated documentation responses."""
+
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=()"
+    return response
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse(url=settings.developer_portal_url)
