@@ -3,7 +3,8 @@
 /** MapLibre network renderer that isolates one route and exposes ordered stops. */
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource, LngLatBounds } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 import { Node, Route, RouteGeometry } from "@/lib/api-client";
 import { createMapStyle, GABORONE_CENTER, routeColor } from "@/lib/map-config";
 

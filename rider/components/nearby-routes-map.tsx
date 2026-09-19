@@ -3,7 +3,8 @@
 /** Interactive place picker and nearby-route result map. */
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSource } from "maplibre-gl";
 import { NearbyRoute, Node, RouteGeometry } from "@/lib/api-client";
 import { createMapStyle, GABORONE_CENTER, routeColor } from "@/lib/map-config";
 

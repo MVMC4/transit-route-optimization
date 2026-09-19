@@ -3,7 +3,8 @@
 /** MapLibre route view that follows the rider marker during an active trip. */
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource, LngLatBounds } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSource, LngLatBounds } from "maplibre-gl";
 import { Node, RouteGeometry } from "@/lib/api-client";
 import { createMapStyle } from "@/lib/map-config";
 

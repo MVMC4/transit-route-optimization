@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSourceSpecification } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSourceSpecification } from "maplibre-gl";
 import { Node } from "@/lib/api-client";
 import { createMapStyle } from "@/lib/map-config";
 

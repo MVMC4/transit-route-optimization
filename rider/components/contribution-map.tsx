@@ -3,7 +3,8 @@
 /** Click-to-trace community map for ordered stops and road-steering points. */
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSource } from "maplibre-gl";
 import { CONTRIBUTION_BOUNDS, createMapStyle, GABORONE_CENTER, isInsideContributionBounds } from "@/lib/map-config";
 
 type Point = { lat: number; long: number };

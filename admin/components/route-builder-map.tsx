@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import { GeoJSONSource } from "maplibre-gl";
 import { createMapStyle, GABORONE_CENTER } from "@/lib/map-config";
 
 export interface DraftStop {
