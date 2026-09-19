@@ -58,6 +58,7 @@ Real captures from the running Compose stack, not mockups.
 - **Database:** PostgreSQL, PostGIS, and pgRouting
 - **Data access:** SQLAlchemy, GeoAlchemy2, and Alembic
 - **Optimization:** Google OR-Tools
+- **Observability:** Prometheus, Grafana, and PostgreSQL Exporter
 - **Runtime:** Docker Compose
 
 The Next.js applications are web clients only. FastAPI owns all HTTP APIs and database access.
@@ -74,6 +75,8 @@ The development stack now exposes the five product surfaces independently:
 | Developer portal | http://localhost:3003 | Public sign-in/registration landing; live session required for API docs and console |
 | API | http://localhost:8000 | FastAPI application; redirects to the developer portal |
 | PostgreSQL | localhost:6000 | PostGIS and pgRouting database |
+| Prometheus | http://localhost:9090 | Metrics storage, service health, and alert evaluation |
+| Grafana | http://localhost:3004 | Operational dashboards and alert investigation |
 
 FastAPI's generated Swagger, ReDoc, and OpenAPI HTTP routes are disabled by default. The protected Fumadocs reference is the developer documentation surface. Enable `API_DOCS_ENABLED=true` only for an isolated development environment where public interactive docs are acceptable.
 
@@ -108,7 +111,7 @@ Developer
 docker compose up --build
 ```
 
-Alembic migrations and the idempotent Gaborone seed run automatically before the API starts. Open marketing at http://localhost:3000, operations at http://localhost:3001, the rider app at http://localhost:3002, and the developer portal at http://localhost:3003. Sign in with the local demo credentials shown there to open the dashboard and endpoint reference.
+Alembic migrations and the idempotent Gaborone seed run automatically before the API starts. Open marketing at http://localhost:3000, operations at http://localhost:3001, the rider app at http://localhost:3002, and the developer portal at http://localhost:3003. Sign in with the local demo credentials shown there to open the dashboard and endpoint reference. Grafana is available at http://localhost:3004 and Prometheus at http://localhost:9090.
 
 ## Local development
 
@@ -172,6 +175,7 @@ admin/      Private Next.js operations dashboard (port 3001)
 rider/      Public Next.js rider application (port 3002)
 docs-site/  Next.js developer portal, authenticated Fumadocs reference, and access console
 database/   PostgreSQL/PostGIS/pgRouting image
+observability/ Prometheus rules plus provisioned Grafana dashboards and alerts
 docs/       API gateway, backend, and frontend guides
 compose.yaml
 ```

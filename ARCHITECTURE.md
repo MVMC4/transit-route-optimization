@@ -1,5 +1,19 @@
 # Architecture
 
+## Operations telemetry
+
+FastAPI publishes low-cardinality request counters, duration histograms, in-flight work, and Python process metrics at `/metrics/`. Prometheus scrapes that endpoint and PostgreSQL Exporter, evaluates the checked-in alert rules, and provides the query layer used by both Grafana and the operations API. Grafana dashboards are provisioned from source control; alert notifications return through a secret-protected webhook and are stored for the admin alert inbox.
+
+```text
+FastAPI /metrics ─┐
+                  ├─> Prometheus ─> Grafana dashboards + alert rules
+Postgres Exporter ┘        │
+                           └─> /api/admin/system ─> operations home
+Grafana webhook ─> /api/admin/observability/grafana-webhook ─> alert inbox
+```
+
+Prometheus and Grafana are development-visible for inspection, but their deployment boundary is private infrastructure in production. Only the authenticated operations API should expose a curated metric summary to administrators.
+
 This document is the quickest way to understand how the repository fits together. It describes the intended production boundaries and calls out places where the current implementation is deliberately a scaffold.
 
 ## System map
