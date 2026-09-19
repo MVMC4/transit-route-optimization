@@ -40,6 +40,10 @@ Real captures from the running Compose stack, not mockups.
 - [Contributing](CONTRIBUTING.md) — setup, route evidence, code standards, and pull-request expectations
 - [Code of Conduct](CODE_OF_CONDUCT.md) — community standards for this project
 - [Security](SECURITY.md) — existing controls, injection defenses, and launch requirements
+- [Security architecture](docs/SECURITY_ARCHITECTURE.md) — SSRF, JSON boundaries, roles, cost caps, and automated checks
+- [Data model](docs/DATA_MODEL.md) — entity catalog, relationships, stable identity, timestamps, and deletion policy
+- [System design playbook](docs/SYSTEM_DESIGN_PLAYBOOK.md) — scaling triggers, jobs, reliability patterns, and tracing
+- [UX standards](docs/UX_STANDARDS.md) — adaptive hierarchy, loading, offline, motion, accessibility, and consent
 - [API gateway](docs/API_GATEWAY.md) — public URLs, endpoints, payloads, and status behavior
 - [Backend](docs/BACKEND.md) — FastAPI, persistence, migrations, pathfinding, and optimization internals
 - [Frontend and UI](docs/FRONTEND.md) — pages, interaction patterns, visual system, and client data flow
@@ -64,8 +68,8 @@ Real captures from the running Compose stack, not mockups.
 - **Database:** PostgreSQL, PostGIS, and pgRouting
 - **Data access:** SQLAlchemy, GeoAlchemy2, and Alembic
 - **Optimization:** Google OR-Tools
-- **Observability:** Prometheus, Grafana, and PostgreSQL Exporter
-- **Runtime:** Docker Compose
+- **Observability:** Prometheus, Grafana, Tempo, OpenTelemetry, and PostgreSQL Exporter
+- **Runtime:** Docker Compose locally; Kubernetes production scaffold
 
 The Next.js applications are web clients only. FastAPI owns all HTTP APIs and database access.
 
@@ -76,7 +80,7 @@ The development stack now exposes the five product surfaces independently:
 | Service | URL | Purpose |
 | --- | --- | --- |
 | Marketing | http://localhost:3000 | Focused homepage plus Services, Developers, and Company routes |
-| Operations dashboard | http://localhost:3001 | Map-based route entry, route management, optimization, and API health |
+| Operations dashboard | http://localhost:3001 | Administrator-only route operations, account visibility, alerts, and system health |
 | Rider app | http://localhost:3002 | Map-first route discovery, journey planning, and rider guide |
 | Developer portal | http://localhost:3003 | Public sign-in/registration landing; live session required for API docs and console |
 | API | http://localhost:8000 | FastAPI application; redirects to the developer portal |

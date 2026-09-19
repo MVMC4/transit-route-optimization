@@ -15,6 +15,12 @@ This repository is a development preview, not a certified navigation or identity
 - Existing sessions invalidated after a successful password reset.
 - Indexed API-key prefix and digest lookup, 100-request rolling-hour limit, monthly quota, and repeated-invalid-key gate.
 - `nosniff`, frame denial, referrer, and browser feature-policy headers.
+- JSON-only request bodies with an explicit body-size ceiling; XML and form payloads are rejected.
+- SSRF-safe external routing with an exact HTTPS host allowlist, DNS/IP validation, redirect checks, timeouts, and response-size limits.
+- Expiring API credentials with last-use tracking and rotation lineage.
+- Administrator role checks on every operations endpoint.
+- Request correlation plus opt-in OpenTelemetry spans to Tempo.
+- CodeQL, Trivy, dependency audits, and Dependabot configuration.
 
 ## Required before public launch
 

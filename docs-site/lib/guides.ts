@@ -72,6 +72,39 @@ export const PRODUCTION_GUIDES: ProductionGuide[] = [
     ],
   },
   {
+    slug: "guides/security-boundaries",
+    title: "Security boundaries",
+    description: "JSON-only inputs, SSRF defenses, role enforcement, tenant isolation, quotas, and automated CVE checks.",
+    status: "Mixed",
+    sections: [
+      { title: "Enforced in the application", bullets: ["Body-bearing endpoints accept JSON only and reject oversized payloads before endpoint parsing.", "The road router uses HTTPS, an exact host allowlist, public-IP DNS validation, redirect revalidation, timeouts, and a two-megabyte response ceiling.", "API keys are digested, expire, record last use and rotation lineage, and have hourly/monthly hard limits.", "Every admin endpoint verifies an authenticated administrator role; a hidden link is never authorization."] },
+      { title: "Identity is not CORS", paragraphs: ["CORS only constrains cooperating browsers. Scripts and raw HTTP clients ignore it. Every tenant-owned query must include the authenticated immutable owner ID, and production OAuth must validate signature, issuer, audience, expiry, and subject."] },
+      { title: "Automated security", bullets: ["CodeQL, Trivy, pip-audit, and npm audit run on changes and on a weekly database refresh.", "Dependabot covers Python, npm, Actions, and Docker.", "Paid integrations require server-side credentials, a spend threshold, a hard cap, a circuit breaker, and an alert owner before enablement."] },
+    ],
+  },
+  {
+    slug: "guides/runtime-and-tracing",
+    title: "Runtime, jobs, and tracing",
+    description: "Kubernetes workload boundaries, idempotent CronJobs, request correlation, OpenTelemetry, and Tempo.",
+    status: "Mixed",
+    sections: [
+      { title: "Request path", code: "client X-Request-ID\n  → FastAPI request boundary\n  → OpenTelemetry FastAPI span\n  → SQLAlchemy / HTTPX child spans\n  → Tempo trace\n  → Grafana investigation" },
+      { title: "Scheduled work", bullets: ["Expired sessions and reset tokens: hourly at minute 17.", "Usage retention pruning: daily at 03:37 Africa/Gaborone.", "API-key expiry audit: daily at 04:23.", "Jobs forbid overlap and record a unique run ID because CronJobs may execute more than once."] },
+      { title: "Deployment boundary", paragraphs: ["Marketing, rider, developer portal, restricted admin, and API are separate Kubernetes workloads. PostgreSQL and object storage stay outside the stateless application base. The manifests are a scaffold until real image digests, domains, secrets, ingress, and a cluster are supplied."], bullets: ["API runs at least two replicas with health probes, resource bounds, HPA, and a disruption budget.", "Pods run as non-root, drop Linux capabilities, and do not mount service-account tokens.", "Blue-green API releases switch the Service selector only after direct green-slot smoke tests."] },
+    ],
+  },
+  {
+    slug: "guides/data-and-ux",
+    title: "Data and UX standards",
+    description: "Entity ownership, stable identity, lifecycle timestamps, loading behavior, offline work, and accessible hierarchy.",
+    status: "Mixed",
+    sections: [
+      { title: "Data discipline", bullets: ["Mutable email or names never act as identity; migrate public contracts to random UUID public IDs without breaking internal relationships.", "New durable records have created and updated timestamps; lifecycle events use explicit expiry, revocation, use, and deletion times.", "Historical records are archived/soft-deleted unless retention or approved erasure requires hard deletion.", "Derived dashboard totals and caches are rebuildable and never compete with the event source of truth."] },
+      { title: "Loading standard", bullets: ["Under one second: no loader.", "Known layout: skeleton; short local action: adjacent indicator; measurable work: progress; long work: explanation and retry/cancel/background choice.", "Use optimistic UI only for reversible actions such as bookmarks and drafts. Security and administrative mutations remain server-confirmed."] },
+      { title: "Layout and trust", bullets: ["Primary outcomes lead reading order; related controls align and group; secondary detail uses progressive disclosure.", "Touch targets are at least 44×44 CSS pixels and keyboard focus remains visible.", "Consent has equal accept/reject weight; optional analytics remain off by default; no fake reviews, hidden fees, or unsupported claims."] },
+    ],
+  },
+  {
     slug: "guides/launch-checklist",
     title: "Launch checklist",
     description: "The evidence required before Tsela can responsibly be described as production-ready.",

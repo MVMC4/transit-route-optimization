@@ -1,6 +1,6 @@
 # Work order: Tsela product and production foundation
 
-**Status:** Active plan. UI, protected Fumadocs, API-key rotation/revocation, and the local observability stack are implemented in the current feature branch. Production identity, high availability, object uploads, and deployed backup infrastructure remain launch work.
+**Status:** Active plan. UI, protected Fumadocs, expiring API-key rotation/revocation, JSON and outbound-request boundaries, administrator RBAC, scheduled maintenance, local metrics/traces, security automation, and Kubernetes deployment scaffolding are implemented. Production identity, shared rate limiting, high availability, object uploads, legal review, and deployed backup infrastructure remain launch work.
 
 **Verified 2026-09-18 (commit pass for this branch):** `admin`, `marketing`, `rider`, and `docs-site` each build clean with `next build`; ESLint is clean except one pre-existing informational warning in `docs-site/postcss.config.mjs` (anonymous default export, not worth restructuring). `api` passes its full pytest suite (18 tests) and is clean under `ruff check`. No functional gaps were found beyond what this document already lists as remaining work. Two items are still open from this pass specifically: the root README has no real screenshot/GIF yet (placeholder comment left in place — capturing one needs the full Compose stack running, which wasn't done in this session), and `.github/PULL_REQUEST_TEMPLATE.md`, `LICENSE` (MIT), and `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) were added but have not been exercised by a real PR yet.
 
@@ -11,7 +11,7 @@ Deliver a Gaborone-first combi discovery product with trustworthy road-following
 ## Completed in this branch
 
 - Split the former monolithic app into marketing, operations, rider, API, database, and developer documentation surfaces.
-- Added a scroll-led marketing map sequence and direct entry points for trip planning, services, API access, and the build journal.
+- Replaced the costly scroll-led marketing map with a server-rendered SVG product proof and direct entry points for trip planning, services, API access, and the build journal.
 - Replaced the developer docs shell with Fumadocs UI and dedicated endpoint pages with search, navigation, examples, and response details.
 - Made the developer portal root a public sign-in/registration landing page. Protected `/console` and `/reference/*` with live server-side session verification.
 - Put the browser session in an HttpOnly cookie and send browser account calls through the docs server. Revoke the API session on sign-out.
@@ -21,6 +21,8 @@ Deliver a Gaborone-first combi discovery product with trustworthy road-following
 - Added protected production runbooks for topology, 04:00 logical archives, WAL/PITR recovery, S3-compatible uploads, Supabase/Google auth, Grafana/OpenProject operations, and launch approval.
 - Added API-key rotation and revocation actions to the console, including one-time `.env` download for the replacement secret.
 - Added reviewed pgBackRest, logical-backup, and systemd timer examples under `ops/backups`; these remain examples until provisioned and restore-tested on production hosts.
+- Added request correlation, OpenTelemetry export to local Tempo, idempotent maintenance jobs, expiring key lineage, strict JSON/size enforcement, SSRF-safe routing, and administrator role checks.
+- Added CI, scheduled CodeQL/Trivy/dependency checks, Dependabot, and a restricted Kubernetes base with CronJobs and a blue-green API switch procedure.
 
 ## Remaining work orders
 
@@ -34,10 +36,10 @@ Deliver a Gaborone-first combi discovery product with trustworthy road-following
 
 ### P1 — API lifecycle and observability
 
-- Extend the implemented create/rotate/revoke owner actions with expiry, last-used timestamp, scopes, rotation lineage, and an exported audit trail.
+- Add key scopes and an exported account audit trail; expiry, last-used timestamp, and rotation lineage are implemented.
 - Record one usage event per accepted key request with a normalized route template, final HTTP status, latency, and request ID. Preserve quota accounting separately from operational metrics.
 - Move hourly invalid-credential and API-key limits to a shared gateway or Redis before running multiple API replicas.
-- Add OpenTelemetry tracing and durable production metric retention to the implemented Prometheus/Grafana development stack.
+- Provision durable production Tempo/Prometheus retention and an authenticated collector; local OpenTelemetry tracing is implemented.
 - Establish baseline latency/error/service-availability SLIs before setting production SLO targets. Add alerts only when an owner and response action are defined.
 
 ### P1 — route trust and rider completion
