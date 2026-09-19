@@ -1,0 +1,31 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: api/pyproject.toml }
+      - run: pip install -e './api[dev]'
+      - run: ruff check api/app api/tests
+      - run: pytest api/tests
+  web:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { app: [marketing, rider, admin, docs-site] }
+    defaults:
+      run: { working-directory: "${{ matrix.app }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: "${{ matrix.app }}/package-lock.json" }
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run build
