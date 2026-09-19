@@ -118,6 +118,8 @@ These are real 1440×960 captures from the authenticated local Compose stack on 
 - [Production authentication](docs/PRODUCTION_AUTH.md) — self-hosted Supabase Auth, Google OAuth, JWT, and migration path
 - [Operations integrations](docs/INTEGRATIONS_AND_WORK_MANAGEMENT.md) — Grafana notifications and OpenProject as a self-hosted Jira alternative
 - [Launch checklist](docs/LAUNCH_CHECKLIST.md) — the evidence required before this can be called production-ready
+- [Work-order register](docs/WORK_ORDER.md) — current execution state, acceptance criteria, rest point, and resume procedure
+- [Work-order audit](docs/WORK_ORDER_AUDIT.md) — maps the full product conversation to completed, blocked, and outstanding work
 - [Brand direction](docs/BRAND.md) — Tsela naming and draft visual system
 - [Cost and capacity](docs/COST_AND_CAPACITY.md) — hourly limits and measurement model
 - [Community service area](docs/SERVICE_AREA.md) — contribution bounds, enforcement, and polygon migration note

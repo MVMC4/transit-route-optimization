@@ -1,7 +1,7 @@
 # Current work orders and continuation handoff
 
 - **Snapshot date:** 2026-09-19
-- **Implementation branch:** `feat/developer-portal-repair`
+- **Repository baseline:** `main` at the 2026-09-19 reconciliation; no implementation work order is currently active
 - **Merge policy:** make reviewable commits on the feature branch, then squash-merge one tested change into `main`. Never add co-author trailers.
 
 **Product state:** strong local foundation; not approved for production.
@@ -39,6 +39,14 @@ This is the source of truth for what is finished, what is still active, what is 
 | WO-13 | P1 | Planned | Complete privacy and compliance operations | Reviewed privacy/terms/cookies/refund position, consent records, data export/deletion, email unsubscribe, licensed assets/fonts, third-party SDK inventory, retention enforcement |
 | WO-14 | P2 | Ongoing | Contributor and architecture documentation | Keep app READMEs, diagrams, decisions, work orders, screenshots, API examples, recovery procedures and contributor instructions synchronized with behavior |
 | WO-15 | P1 | Planned | Split the internal handbook from the public API documentation and reskin Fumadocs | Engineering/operations material has a separately authorized home; the developer reference contains one complete page per supported endpoint; a restrained Tsela skin matches the rider system without hiding standard documentation navigation, search, code, or hierarchy |
+| WO-16 | P1 | Foundation implemented; production proof planned | Operate scheduled maintenance and lifecycle automation | Idempotent jobs have ownership, schedules, missed-run/failure alerts, retention evidence, key-expiry notifications, backup verification, CVE/license refreshes and a tested production scheduler |
+| WO-17 | P0 before URL fetches or paid integrations | Foundation implemented; scale controls planned | Close adversarial request and abuse-cost paths | JSON/body limits, SSRF-safe outbound requests, redirect revalidation, tenant checks, shared rate limits, spend caps, minimal service permissions and suspicious-use alerts are tested at the real ingress and egress boundaries |
+| WO-18 | P1 | Planned | Establish durable data-governance invariants | Stable public IDs, `createdAt` and `updatedAt`, recoverable deletion, tenant ownership, canonical sources of truth, migration rules and measured indexes exist for every long-lived record |
+| WO-19 | P2, evidence-gated | Decision framework complete; implementation deferred | Add asynchronous and real-time architecture only where measured | Jobs, queues, workers, retries, backoff, dead-letter handling, SSE/WebSocket choices, projections or CQRS each have a measured trigger, owner, idempotency contract and failure test before adoption |
+| WO-20 | P1 | Foundation complete locally; brand review planned | Finish marketing, brand and search readiness | Final name/mark/icon are approved; SEO and social metadata validate; the product journey, services, developer access, journal and legal routes communicate one coherent product without shipping a heavy interactive map |
+| WO-21 | P1 | Partially implemented | Complete installable PWA and field-offline behavior | Rider and operator surfaces install cleanly, cache only safe reads, expose stale state, queue idempotent drafts, resume after reconnect, animate state changes, and pass low-connectivity field tests |
+
+The [conversation-to-work-order audit](WORK_ORDER_AUDIT.md) maps the full product discussion to these entries and records the few items that were previously only implicit.
 
 ## WO-15 — documentation boundary and reference redesign
 
@@ -78,9 +86,9 @@ Do not turn the guide into a marketing microsite. Avoid scroll choreography, nov
 - Light and dark themes meet WCAG AA contrast; sidebar, search, table of contents, deep links, keyboard navigation, mobile drawer, and code-copy controls pass interaction tests.
 - Screenshots stay excluded from the root README until design review approves both themes and the content split; the gallery capture may then be run with `INCLUDE_DOCS=true`.
 
-## Active repair scope in `feat/developer-portal-repair`
+## Completed repair slice from `feat/developer-portal-repair`
 
-The current branch is intentionally limited to a coherent repair slice:
+The merged repair slice was intentionally limited to a coherent set of foundations:
 
 1. **Developer portal:** replace accumulated custom shells with the Fumadocs layout; keep sign-up/sign-in public and make documentation plus console protected; remove internal preview endpoints from the public reference; add search, pagination and limits to the documented route listing.
 2. **API boundary:** publish only `/v1` through the production ingress; keep internal `/api` routes out of the public contract; hash session and API-key tokens with HMAC-SHA256 using a deployment secret; reject the local secret in production; explicitly disable secure cookies only for localhost Compose so the production-mode Next.js server remains usable over local HTTP.
@@ -88,7 +96,7 @@ The current branch is intentionally limited to a coherent repair slice:
 4. **Runtime hardening:** non-root containers, health checks, Kubernetes security contexts, read-only root filesystems and resource limits.
 5. **Dependency hygiene:** upgrade the vulnerable legacy MapLibre package and replace Dependabot PR-per-package noise with grouped monthly updates.
 
-Do not expand this branch into Supabase integration, production database provisioning, new rider features, or Kubernetes installation. Those are separate work orders with different credentials and failure modes.
+Do not treat that merged foundation as Supabase integration, production database provisioning, field-verified route coverage, or a production Kubernetes installation. Those remain separate work orders with different credentials and failure modes.
 
 ## Adequate rest point
 
@@ -100,7 +108,7 @@ The project is safe to pause when all of the following are true:
 - [ ] An authenticated local demo session opens the overview, endpoint reference and console without changing UI shells.
 - [ ] Grafana opens at `http://localhost:3004`, uses the provisioned Tsela dashboard, and accepts the documented local credentials.
 - [ ] The high/critical repository security scan passes or any remaining finding is recorded here with owner and reason.
-- [ ] Changes are committed in logical slices on `feat/developer-portal-repair`, pushed, then squash-merged to `main` as one tested integration commit.
+- [ ] The selected work order is committed in logical slices on its conventional feature/docs branch, reviewed, and squash-merged to `main`.
 - [ ] `main` is pushed, the working tree is clean, and no Dependabot PR or remote bot branch remains open.
 
 At that point, stop all optional local services if machine resources matter:
@@ -119,6 +127,12 @@ This preserves volumes. Do not use `down -v`; that would remove local data.
 4. Start only required services with `docker compose up -d` and add the `--profile observability` profile only when working on telemetry.
 5. Reproduce the last acceptance test before changing code.
 6. Implement and verify in small commits, update this register and the relevant runbook, then squash-merge to `main`.
+
+At the 2026-09-19 reconciliation, `main` had no open pull requests or issues,
+the worktree was clean before this documentation branch, and the API baseline
+was rechecked at 26 passing tests with Ruff clean. Runtime services were not
+restarted solely for a documentation audit; repeat the Compose/UI checks before
+the next implementation slice claims a new rest point.
 
 ## Recommended next phase
 
