@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tsela-runtime
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tsela-runtime
+data:
+  DEPLOYMENT_ENVIRONMENT: production
+  API_DOCS_ENABLED: "false"
+  DEMO_ACCOUNT_ENABLED: "false"
+  OTEL_ENABLED: "true"
+  OTEL_SERVICE_NAME: tsela-api
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo.observability.svc.cluster.local:4317
+  OTEL_TRACE_SAMPLE_RATIO: "0.10"
+  ROAD_ROUTER_URL: https://router.project-osrm.org
+  ROAD_ROUTER_ALLOWED_HOSTS: router.project-osrm.org
+  DEFAULT_HOURLY_API_LIMIT: "100"
+  INVALID_KEY_ATTEMPTS_PER_HOUR: "20"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tsela
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 1m
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: tsela-tls
+      hosts: [tsela.example, app.tsela.example, developers.tsela.example, ops.tsela.example, api.tsela.example]
+  rules:
+    - host: tsela.example
+      http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: marketing, port: { number: 3000 } } } }] }
+    - host: app.tsela.example
+      http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: rider, port: { number: 3002 } } } }] }
+    - host: developers.tsela.example
+      http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: docs, port: { number: 3003 } } } }] }
+    - host: ops.tsela.example
+      http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: admin, port: { number: 3001 } } } }] }
+    - host: api.tsela.example
+      http: { paths: [{ path: /, pathType: Prefix, backend: { service: { name: api, port: { number: 8000 } } } }] }

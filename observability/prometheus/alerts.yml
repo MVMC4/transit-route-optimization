@@ -30,3 +30,27 @@ groups:
         annotations:
           summary: Tsela API p95 latency is above one second
           description: The 95th percentile API latency has remained above one second for five minutes.
+      - alert: TselaAuthenticationFailures
+        expr: sum(rate(tsela_auth_failures_total[10m])) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Authentication failures are elevated
+          description: Authentication failures exceed the initial abuse-detection threshold. Check bounded reason labels and request logs.
+      - alert: TselaSecurityBoundaryRejections
+        expr: sum(increase(tsela_security_rejections_total[15m])) > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Security boundary rejections are elevated
+          description: Oversized or unsupported-media requests are arriving repeatedly. Investigate request IDs without logging payloads.
+      - alert: TselaQuotaRejectionsSpike
+        expr: sum(increase(tsela_rate_limit_rejections_total[15m])) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: API quota rejections are elevated
+          description: Quota or invalid-credential limits are rejecting sustained traffic. Confirm whether this is abuse or a customer integration issue.

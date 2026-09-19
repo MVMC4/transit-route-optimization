@@ -5,11 +5,11 @@ services:
     container_name: transit-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: transitsym
-      POSTGRES_PASSWORD: metro
-      POSTGRES_DB: transit
+      POSTGRES_USER: ${POSTGRES_USER:-transitsym}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-metro}
+      POSTGRES_DB: ${POSTGRES_DB:-transit}
     ports:
-      - "6000:5432"
+      - "127.0.0.1:6000:5432"
     volumes:
       - transit_system:/var/lib/postgresql/data
     healthcheck:
@@ -24,7 +24,7 @@ services:
     container_name: transit-api
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://transitsym:metro@db:5432/transit?connect_timeout=3
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-transitsym}:${POSTGRES_PASSWORD:-metro}@db:5432/${POSTGRES_DB:-transit}?connect_timeout=3
       CORS_ORIGINS: http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3003
       DEVELOPER_PORTAL_URL: http://localhost:3003
       API_DOCS_ENABLED: "false"
@@ -35,8 +35,12 @@ services:
       GRAFANA_PUBLIC_URL: http://localhost:3004
       PROMETHEUS_PUBLIC_URL: http://localhost:9090
       PROMETHEUS_INTERNAL_URL: http://prometheus:9090
+      DEPLOYMENT_ENVIRONMENT: local-compose
+      OTEL_ENABLED: "true"
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_TRACE_SAMPLE_RATIO: "1.0"
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -64,7 +68,7 @@ services:
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_API_BASE: http://localhost:8000
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
   rider:
     build:
@@ -76,7 +80,7 @@ services:
     environment:
       NEXT_PUBLIC_API_BASE: http://localhost:8000
     ports:
-      - "3002:3002"
+      - "127.0.0.1:3002:3002"
     depends_on:
       api:
         condition: service_healthy
@@ -91,7 +95,7 @@ services:
     environment:
       NEXT_PUBLIC_API_BASE: http://localhost:8000
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     depends_on:
       api:
         condition: service_healthy
@@ -109,7 +113,7 @@ services:
       - ./observability/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     depends_on:
       api:
         condition: service_healthy
@@ -121,7 +125,7 @@ services:
     container_name: transit-postgres-exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: postgresql://transitsym:metro@db:5432/transit?sslmode=disable
+      DATA_SOURCE_NAME: postgresql://${POSTGRES_USER:-transitsym}:${POSTGRES_PASSWORD:-metro}@db:5432/${POSTGRES_DB:-transit}?sslmode=disable
     depends_on:
       db:
         condition: service_healthy
@@ -134,8 +138,7 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_SERVER_ROOT_URL: http://localhost:3004
       GRAFANA_WEBHOOK_SECRET: ${GRAFANA_WEBHOOK_SECRET:-local-grafana-webhook}
     volumes:
@@ -143,9 +146,19 @@ services:
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     ports:
-      - "3004:3000"
+      - "127.0.0.1:3004:3000"
     depends_on:
       - prometheus
+      - tempo
+
+  tempo:
+    image: grafana/tempo:2.8.2
+    container_name: transit-tempo
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./observability/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
 
   docs:
     build:
@@ -167,7 +180,7 @@ services:
       NEXT_PUBLIC_DEMO_EMAIL: demo@tsela.local
       NEXT_PUBLIC_DEMO_PASSWORD: TselaDemo2026!
     ports:
-      - "3003:3003"
+      - "127.0.0.1:3003:3003"
     depends_on:
       api:
         condition: service_healthy
@@ -176,3 +189,4 @@ volumes:
   transit_system:
   prometheus_data:
   grafana_data:
+  tempo_data:
