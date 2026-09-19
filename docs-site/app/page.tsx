@@ -22,7 +22,7 @@ export default function DeveloperLanding() {
           <div className="developer-landing-points">
             <span>Gaborone routes with road aligned geometry</span>
             <span>Clear API examples and request limits</span>
-            <span>One dashboard for credentials and usage</span>
+            <span>Protected production, recovery, storage, and auth runbooks</span>
           </div>
         </div>
         <LoginForm />
@@ -31,6 +31,7 @@ export default function DeveloperLanding() {
       <section className="developer-portal-paths" aria-label="After sign in">
         <Link href="/reference/routes/list"><span>01 / REFERENCE</span><strong>Browse the API guide</strong><small>Endpoint details, examples, and responses</small></Link>
         <Link href="/console"><span>02 / DASHBOARD</span><strong>Manage your access</strong><small>Keys, limits, and request activity</small></Link>
+        <Link href="/reference/guides/production-architecture"><span>03 / OPERATIONS</span><strong>Read the production runbooks</strong><small>Architecture, backup, recovery, uploads, identity, and launch gates</small></Link>
       </section>
     </HomeLayout>
   );

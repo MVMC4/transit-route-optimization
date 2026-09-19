@@ -1,6 +1,7 @@
 /** Fumadocs page tree generated from the typed Tsela endpoint catalog. */
 
 import type * as PageTree from "fumadocs-core/page-tree";
+import { PRODUCTION_GUIDES } from "./guides";
 import { REFERENCE_ENDPOINTS, REFERENCE_GROUPS } from "./reference";
 
 export const pageTree: PageTree.Root = {
@@ -15,5 +16,11 @@ export const pageTree: PageTree.Root = {
         url: `/reference/${endpoint.slug}`,
       })),
     ]),
+    { type: "separator", name: "Production operations" },
+    ...PRODUCTION_GUIDES.map((guide) => ({
+      type: "page" as const,
+      name: guide.title,
+      url: `/reference/${guide.slug}`,
+    })),
   ],
 };

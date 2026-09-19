@@ -11,6 +11,7 @@ export function FumadocsShell({ children }: { children: ReactNode }) {
     nav={{ title: <span className="fuma-brand"><b>T</b><span>Tsela <small>Developers</small></span></span>, url: "/reference/routes/list" }}
     links={[
       { type: "main", text: "API reference", url: "/reference/routes/list" },
+      { type: "main", text: "Production", url: "/reference/guides/production-architecture" },
       { type: "button", text: "Dashboard", url: "/console" },
       { type: "main", text: "Tsela ↗", url: MARKETING_URL, external: true },
     ]}

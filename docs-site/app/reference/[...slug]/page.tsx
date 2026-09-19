@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { CopyButton } from "../../../components/copy-button";
 import { FumadocsShell } from "../../../components/fumadocs-shell";
+import { findGuide, PRODUCTION_GUIDES } from "../../../lib/guides";
 import { API_URL } from "../../../lib/urls";
 import { findEndpoint, REFERENCE_ENDPOINTS } from "../../../lib/reference";
 
@@ -12,18 +13,38 @@ type PageProps = { params: Promise<{ slug: string[] }> };
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return REFERENCE_ENDPOINTS.map((endpoint) => ({ slug: endpoint.slug.split("/") }));
+  return [
+    ...REFERENCE_ENDPOINTS.map((endpoint) => ({ slug: endpoint.slug.split("/") })),
+    ...PRODUCTION_GUIDES.map((guide) => ({ slug: guide.slug.split("/") })),
+  ];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const endpoint = findEndpoint((await params).slug);
-  return endpoint ? { title: `${endpoint.title} | Tsela API` } : {};
+  const slug = (await params).slug;
+  const entry = findEndpoint(slug) ?? findGuide(slug);
+  return entry ? { title: `${entry.title} | Tsela Developers` } : {};
 }
 
 export default async function ReferencePage({ params }: PageProps) {
-  const endpoint = findEndpoint((await params).slug);
+  const slug = (await params).slug;
+  const guide = findGuide(slug);
+  if (guide) {
+    const toc = guide.sections.map((section) => ({
+      title: section.title,
+      url: `#${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      depth: 2,
+    }));
+    return <FumadocsShell><DocsPage toc={toc}><DocsTitle>{guide.title}</DocsTitle><DocsDescription>{guide.description}</DocsDescription><DocsBody className="reference-body production-guide">
+      <div className={`guide-status ${guide.status === "Implemented" ? "implemented" : guide.status === "Mixed" ? "mixed" : "required"}`}><span>{guide.status}</span><p>Read this status literally: planned infrastructure is not presented as already deployed.</p></div>
+      {guide.sections.map((section) => {
+        const id = section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        return <section className="reference-section" key={section.title}><h2 id={id}>{section.title}</h2>{section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.bullets && <ul className="reference-notes">{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}{section.code && <div className="reference-code"><div><span>OPERATIONS MODEL</span><CopyButton value={section.code} /></div><pre><code>{section.code}</code></pre></div>}</section>;
+      })}
+    </DocsBody></DocsPage></FumadocsShell>;
+  }
+  const endpoint = findEndpoint(slug);
   if (!endpoint) notFound();
-  const sampleUrl = endpoint.path.replace("{routeId}", "3").concat(endpoint.slug === "routes/nearby" ? "?lat=-24.62896&long=25.94367&radiusMeters=750" : "");
+  const sampleUrl = endpoint.path.replace("{routeId}", "3").replace("{keyId}", "8").concat(endpoint.slug === "routes/nearby" ? "?lat=-24.62896&long=25.94367&radiusMeters=750" : "");
   const authHeader = endpoint.authentication === "API key" ? '-H "X-API-Key: $TSELA_API_KEY"' : endpoint.authentication === "Developer session" ? '-H "Authorization: Bearer $TSELA_SESSION"' : "";
   const body = endpoint.requestBody ? ` -H "Content-Type: application/json" --data '${endpoint.requestBody.replace(/\n/g, "").replace(/\s+/g, " ")}'` : "";
   const command = `curl -X ${endpoint.method} ${authHeader}${body} "${API_URL}${sampleUrl}"`.replace(/\s+/g, " ");

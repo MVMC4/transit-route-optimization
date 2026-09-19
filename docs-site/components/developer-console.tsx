@@ -15,6 +15,7 @@ export function DeveloperConsole() {
   const [usage, setUsage] = useState<Usage | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [changingKeyId, setChangingKeyId] = useState<number | null>(null);
   const [keyName, setKeyName] = useState("My application");
   const [createdKey, setCreatedKey] = useState<CreatedApiKey | null>(null);
   const [error, setError] = useState("");
@@ -45,6 +46,47 @@ export function DeveloperConsole() {
     finally { setCreating(false); }
   }
 
+  async function refreshCredentials() {
+    const [nextKeys, nextUsage] = await Promise.all([developerApi.keys(), developerApi.usage()]);
+    setKeys(nextKeys); setUsage(nextUsage);
+  }
+
+  async function rotateKey(key: ApiKey) {
+    if (!window.confirm(`Rotate ${key.name}? The current key will stop working immediately.`)) return;
+    setChangingKeyId(key.id); setError(""); setCreatedKey(null);
+    try {
+      const replacement = await developerApi.rotateKey(key.id);
+      setCreatedKey(replacement);
+      await refreshCredentials();
+    } catch (changeError: unknown) {
+      setError(changeError instanceof Error ? changeError.message : "Could not rotate this key");
+    } finally { setChangingKeyId(null); }
+  }
+
+  async function revokeKey(key: ApiKey) {
+    if (!window.confirm(`Revoke ${key.name}? Requests using it will fail immediately.`)) return;
+    setChangingKeyId(key.id); setError("");
+    try {
+      await developerApi.revokeKey(key.id);
+      await refreshCredentials();
+    } catch (changeError: unknown) {
+      setError(changeError instanceof Error ? changeError.message : "Could not revoke this key");
+    } finally { setChangingKeyId(null); }
+  }
+
+  function downloadSecret(key: CreatedApiKey) {
+    const contents = [
+      "# Tsela API credential — store this file in a secret manager and never commit it.",
+      `TSELA_API_KEY=${key.key}`,
+      `TSELA_API_BASE=${API_URL}/v1`,
+      "",
+    ].join("\n");
+    const url = URL.createObjectURL(new Blob([contents], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url; link.download = `tsela-${key.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.env`;
+    link.click(); URL.revokeObjectURL(url);
+  }
+
   if (loading) return <div className="console-loading"><span/><span/><span/><p>Loading account, keys, and usage…</p></div>;
   if (!account) return <div className="console-signed-out"><p className="eyebrow">DEVELOPER ACCESS</p><h1>Sign in to your console.</h1><p>{error || "Create an account to issue API keys and see real request usage."}</p><Link className="console-primary" href="/login">Continue to sign in →</Link></div>;
 
@@ -53,7 +95,7 @@ export function DeveloperConsole() {
     <div className="console-heading"><div><p className="eyebrow">WELCOME BACK, {account.displayName.toUpperCase()}</p><h1>API console</h1><p>Credentials, monthly usage, and environment status for {account.email}.</p></div><button className="console-signout" onClick={async () => { await developerApi.logout().catch(() => undefined); await destroyBrowserSession(); setAccount(null); router.replace("/"); }}>Sign out</button></div>
     <section className="usage-panel"><div><span>Monthly requests</span><strong>{usage?.used ?? 0}<small> / {usage?.quota ?? 0}</small></strong></div><div className="quota-track"><span style={{ width: `${percent}%` }} /></div><p>{usage?.remaining ?? 0} requests remaining · 100 requests per rolling hour per key.</p><p>{usage?.estimatedCostUsd == null ? "Cost estimate unavailable until ESTIMATED_COST_PER_1000_REQUESTS_USD is configured from measured infrastructure spend." : `Estimated request cost this month: $${usage.estimatedCostUsd.toFixed(4)} USD.`}</p></section>
     <section className="console-live-grid"><article><span className="console-badge live">LIVE</span><h2>Local environment</h2><code>{API_URL}</code><p>Open development endpoints under <code>/api</code>.</p></article><article><span className="console-badge live">PROTECTED</span><h2>Public v1</h2><code>{API_URL}/v1</code><p>Send your key in the <code>X-API-Key</code> header.</p></article></section>
-    <section className="keys-section"><div className="keys-heading"><div><p className="section-kicker">API KEYS</p><h2>Your credentials</h2></div><div className="create-key-inline"><input value={keyName} onChange={(event) => setKeyName(event.target.value)} aria-label="API key name"/><button className="console-primary" onClick={createKey} disabled={creating || !keyName.trim()}>{creating ? "Creating…" : "Create key"}</button></div></div>{error && <div className="auth-error">{error}</div>}{createdKey && <div className="one-time-key"><span>Copy this key now — it will not be shown again.</span><code>{createdKey.key}</code><button onClick={() => navigator.clipboard.writeText(createdKey.key)}>Copy key</button></div>}<div className="key-list">{keys.length === 0 ? <p>No keys yet. Name your application and create the first one.</p> : keys.map((key) => <div key={key.id}><span className={key.revokedAt ? "revoked" : "active"}/><strong>{key.name}</strong><code>{key.prefix}…</code><small>{key.hourlyLimit}/hour · {key.monthlyQuota.toLocaleString()}/month</small></div>)}</div></section>
+    <section className="keys-section"><div className="keys-heading"><div><p className="section-kicker">API KEYS</p><h2>Your credentials</h2></div><div className="create-key-inline"><input value={keyName} onChange={(event) => setKeyName(event.target.value)} aria-label="API key name"/><button className="console-primary" onClick={createKey} disabled={creating || !keyName.trim()}>{creating ? "Creating…" : "Create key"}</button></div></div>{error && <div className="auth-error">{error}</div>}{createdKey && <div className="one-time-key"><span>Save this key now — only its hash is stored, so the secret cannot be shown again.</span><code>{createdKey.key}</code><div className="one-time-actions"><button onClick={() => navigator.clipboard.writeText(createdKey.key)}>Copy key</button><button onClick={() => downloadSecret(createdKey)}>Download .env</button><button onClick={() => setCreatedKey(null)}>Dismiss</button></div></div>}<div className="key-list">{keys.length === 0 ? <p>No keys yet. Name your application and create the first one.</p> : keys.map((key) => <div key={key.id}><span className={key.revokedAt ? "revoked" : "active"}/><strong>{key.name}</strong><code>{key.prefix}…</code><small>{key.revokedAt ? `Revoked ${new Date(key.revokedAt).toLocaleDateString()}` : `${key.hourlyLimit}/hour · ${key.monthlyQuota.toLocaleString()}/month`}</small><div className="key-actions">{!key.revokedAt && <><button onClick={() => rotateKey(key)} disabled={changingKeyId === key.id}>{changingKeyId === key.id ? "Working…" : "Rotate"}</button><button className="danger" onClick={() => revokeKey(key)} disabled={changingKeyId === key.id}>Revoke</button></>}</div></div>)}</div></section>
     <section className="usage-paths"><div><p className="section-kicker">REQUEST ACTIVITY</p><h2>Endpoints this month</h2></div><div>{usage && Object.keys(usage.recentPaths).length > 0 ? Object.entries(usage.recentPaths).map(([path, count]) => <p key={path}><code>{path}</code><strong>{count}</strong></p>) : <p className="empty-usage">Use a key against <code>/v1/routes</code> and activity will appear here.</p>}</div></section>
   </>;
 }

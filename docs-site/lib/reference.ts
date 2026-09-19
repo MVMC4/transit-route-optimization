@@ -11,7 +11,7 @@ export type ReferenceParameter = {
 export type ReferenceEndpoint = {
   slug: string;
   group: "Routes" | "Journey planning" | "Community" | "Developer access" | "Platform";
-  method: "GET" | "POST";
+  method: "GET" | "POST" | "PATCH" | "DELETE";
   path: string;
   title: string;
   description: string;
@@ -109,8 +109,38 @@ export const REFERENCE_ENDPOINTS: ReferenceEndpoint[] = [
       { name: "body", location: "body", type: "application/json", required: true, description: "A memorable name for the credential." },
     ],
     requestBody: `{ "name": "Local prototype" }`,
-    response: `{\n  "id": 8,\n  "name": "Local prototype",\n  "prefix": "tos_live_ab12cd",\n  "secret": "tos_live_••••••••",\n  "monthlyQuota": 10000,\n  "hourlyLimit": 100\n}`,
+    response: `{\n  "id": 8,\n  "name": "Local prototype",\n  "prefix": "tos_live_ab12cd",\n  "key": "tos_live_••••••••",\n  "monthlyQuota": 10000,\n  "hourlyLimit": 100,\n  "createdAt": "2026-09-19T08:42:12Z",\n  "revokedAt": null\n}`,
     notes: ["Store the secret immediately; the server persists only its SHA-256 hash.", "Revoke a leaked credential from the access console."],
+  },
+  {
+    slug: "developers/rotate-key",
+    group: "Developer access",
+    method: "POST",
+    path: "/api/developer/keys/{keyId}/rotate",
+    title: "Rotate an API key",
+    description: "Atomically revoke an active credential and issue its one-time replacement with the same name and limits.",
+    authentication: "Developer session",
+    parameters: [
+      { name: "Authorization", location: "header", type: "Bearer token", required: true, description: "Developer session token returned by login." },
+      { name: "keyId", location: "path", type: "integer", required: true, description: "An active API key owned by the signed-in account." },
+    ],
+    response: `{\n  "id": 9,\n  "name": "Local prototype",\n  "prefix": "tos_live_ef34gh",\n  "key": "tos_live_••••••••",\n  "monthlyQuota": 10000,\n  "hourlyLimit": 100,\n  "revokedAt": null\n}`,
+    notes: ["The old credential stops working in the same database transaction.", "The replacement secret is returned once; copy or download it before dismissing the console notice.", "A revoked key cannot be rotated."],
+  },
+  {
+    slug: "developers/revoke-key",
+    group: "Developer access",
+    method: "DELETE",
+    path: "/api/developer/keys/{keyId}",
+    title: "Revoke an API key",
+    description: "Immediately prevent a credential owned by the signed-in developer from authorizing new requests.",
+    authentication: "Developer session",
+    parameters: [
+      { name: "Authorization", location: "header", type: "Bearer token", required: true, description: "Developer session token returned by login." },
+      { name: "keyId", location: "path", type: "integer", required: true, description: "The API key to revoke." },
+    ],
+    response: `204 No Content`,
+    notes: ["Revocation is irreversible. Create or rotate another key before revoking the only credential used by a live service.", "Requests made with the revoked secret return 401."],
   },
   {
     slug: "v1/list-routes",
