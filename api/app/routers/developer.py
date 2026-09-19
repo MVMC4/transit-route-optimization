@@ -184,6 +184,38 @@ def revoke_key(
     session.commit()
 
 
+@router.post("/keys/{key_id}/rotate", response_model=ApiKeyCreated)
+def rotate_key(
+    key_id: int,
+    account: DeveloperAccount = Depends(get_current_account),
+    session: Session = Depends(get_db),
+) -> ApiKeyCreated:
+    """Replace an active credential and reveal the new secret exactly once."""
+
+    previous_key = session.scalar(
+        select(ApiKey).where(ApiKey.id == key_id, ApiKey.account_id == account.id)
+    )
+    if previous_key is None:
+        raise HTTPException(status_code=404, detail="API key not found")
+    if previous_key.revoked_at is not None:
+        raise HTTPException(status_code=409, detail="A revoked API key cannot be rotated")
+
+    raw_key = issue_api_key()
+    replacement = ApiKey(
+        account_id=account.id,
+        name=previous_key.name,
+        prefix=key_prefix(raw_key),
+        secret_hash=hash_token(raw_key),
+        monthly_quota=previous_key.monthly_quota,
+        hourly_limit=previous_key.hourly_limit,
+    )
+    previous_key.revoked_at = datetime.now(UTC)
+    session.add(replacement)
+    session.commit()
+    session.refresh(replacement)
+    return ApiKeyCreated(key=raw_key, **ApiKeyRead.model_validate(replacement).model_dump())
+
+
 @router.get("/usage", response_model=UsageSummary)
 def usage(
     account: DeveloperAccount = Depends(get_current_account),

@@ -38,6 +38,8 @@ def test_openapi_contains_complete_route_surface() -> None:
     assert "post" in paths["/api/developer/login"]
     assert "post" in paths["/api/developer/logout"]
     assert "post" in paths["/api/developer/keys"]
+    assert "delete" in paths["/api/developer/keys/{key_id}"]
+    assert "post" in paths["/api/developer/keys/{key_id}/rotate"]
     assert "get" in paths["/api/developer/usage"]
     assert "post" in paths["/api/developer/password-recovery"]
     assert "post" in paths["/api/developer/password-reset"]
