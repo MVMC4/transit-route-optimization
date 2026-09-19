@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { SurfaceShell } from "@/components/surface-shell";
+import { OfflineBanner } from "@/components/offline-banner";
 
 export const metadata: Metadata = {
   title: "TransitOS Rider | Find your way through Gaborone",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <OfflineBanner />
         <SurfaceShell>{children}</SurfaceShell>
       </body>
     </html>

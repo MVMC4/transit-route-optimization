@@ -8,10 +8,16 @@
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = typeof window === "undefined" ? null : window.localStorage.getItem("tsela_admin_token");
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options?.headers },
     ...options,
   });
+  if (res.status === 401 || res.status === 403) {
+    if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+      window.location.assign(new URL("/login", window.location.origin).toString());
+    }
+  }
   if (!res.ok) {
     const payload: unknown = await res.json().catch(() => null);
     const errorMessage =

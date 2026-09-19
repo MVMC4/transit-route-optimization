@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 /** Browser security policy for the rider application; geolocation stays available for live trips. */
 const nextConfig: NextConfig = {
+  experimental: { useOffline: true },
   headers() {
     return [{ source: "/:path*", headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },
