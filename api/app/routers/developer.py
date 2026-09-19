@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.metrics import AUTH_FAILURES
 from app.models import (
     ApiKey,
     ApiUsage,
@@ -101,6 +102,7 @@ def login(
         select(DeveloperAccount).where(DeveloperAccount.email == payload.email.strip().lower())
     )
     if account is None or not verify_password(payload.password, account.password_hash):
+        AUTH_FAILURES.labels("developer", "invalid_credentials").inc()
         raise HTTPException(status_code=401, detail="Email or password is incorrect")
     raw_token = issue_session_token()
     session.add(
@@ -162,6 +164,7 @@ def create_key(
         secret_hash=hash_token(raw_key),
         monthly_quota=settings.default_monthly_api_quota,
         hourly_limit=settings.default_hourly_api_limit,
+        expires_at=datetime.now(UTC) + timedelta(days=settings.api_key_lifetime_days),
     )
     session.add(api_key)
     session.commit()
@@ -189,6 +192,7 @@ def rotate_key(
     key_id: int,
     account: DeveloperAccount = Depends(get_current_account),
     session: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
 ) -> ApiKeyCreated:
     """Replace an active credential and reveal the new secret exactly once."""
 
@@ -208,6 +212,8 @@ def rotate_key(
         secret_hash=hash_token(raw_key),
         monthly_quota=previous_key.monthly_quota,
         hourly_limit=previous_key.hourly_limit,
+        expires_at=datetime.now(UTC) + timedelta(days=settings.api_key_lifetime_days),
+        rotated_from_id=previous_key.id,
     )
     previous_key.revoked_at = datetime.now(UTC)
     session.add(replacement)

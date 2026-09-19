@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
 from app.database import get_db
+from app.metrics import AUTH_FAILURES, RATE_LIMIT_REJECTIONS
 from app.models import ApiKey, ApiUsage, Route
 from app.routers.routes import get_route_geometry
 from app.schemas import RouteGeometryResponse, RouteRead
@@ -24,6 +25,7 @@ def require_api_key(
     settings: Settings = Depends(get_settings),
 ) -> ApiKey:
     if not x_api_key:
+        AUTH_FAILURES.labels("public_api", "missing_key").inc()
         raise HTTPException(status_code=401, detail="X-API-Key is required")
     client_host = request.client.host if request.client else "unknown"
     client_identity = f"ip:{client_host}"
@@ -32,6 +34,7 @@ def require_api_key(
         invalid_credential_gate.blocked(identity, settings.invalid_key_attempts_per_hour)
         for identity in (client_identity, credential_identity)
     ):
+        RATE_LIMIT_REJECTIONS.labels("invalid_credentials").inc()
         raise HTTPException(
             status_code=429,
             detail="Too many invalid credential attempts",
@@ -42,12 +45,14 @@ def require_api_key(
             ApiKey.prefix == key_prefix(x_api_key),
             ApiKey.secret_hash == hash_token(x_api_key),
             ApiKey.revoked_at.is_(None),
+            ApiKey.expires_at > datetime.now(UTC),
         )
     )
     if api_key is None:
         invalid_credential_gate.record(client_identity)
         invalid_credential_gate.record(credential_identity)
-        raise HTTPException(status_code=401, detail="API key is invalid or revoked")
+        AUTH_FAILURES.labels("public_api", "invalid_key").inc()
+        raise HTTPException(status_code=401, detail="API key is invalid, expired, or revoked")
     now = datetime.now(UTC)
     period_start = datetime(now.year, now.month, 1, tzinfo=UTC)
     monthly_used = (
@@ -59,6 +64,7 @@ def require_api_key(
         or 0
     )
     if monthly_used >= api_key.monthly_quota:
+        RATE_LIMIT_REJECTIONS.labels("monthly_quota").inc()
         raise HTTPException(
             status_code=429,
             detail="Monthly API quota exceeded",
@@ -74,11 +80,13 @@ def require_api_key(
         or 0
     )
     if hourly_used >= api_key.hourly_limit:
+        RATE_LIMIT_REJECTIONS.labels("hourly_quota").inc()
         raise HTTPException(
             status_code=429,
             detail=f"Hourly API limit exceeded ({api_key.hourly_limit} requests)",
             headers={"Retry-After": "3600"},
         )
+    api_key.last_used_at = now
     session.add(ApiUsage(api_key_id=api_key.id, method=request.method, path=request.url.path))
     session.commit()
     return api_key

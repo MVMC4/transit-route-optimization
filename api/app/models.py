@@ -54,6 +54,7 @@ class DeveloperAccount(Base):
     email: Mapped[str] = mapped_column(String(254), nullable=False, unique=True, index=True)
     display_name: Mapped[str] = mapped_column("displayName", String(120), nullable=False)
     password_hash: Mapped[str] = mapped_column("passwordHash", String(512), nullable=False)
+    role: Mapped[str] = mapped_column(String(24), nullable=False, default="developer", index=True)
     created_at: Mapped[datetime] = mapped_column(
         "createdAt", DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -100,13 +101,18 @@ class ApiKey(Base):
     monthly_quota: Mapped[int] = mapped_column(
         "monthlyQuota", Integer, nullable=False, default=10000
     )
-    hourly_limit: Mapped[int] = mapped_column(
-        "hourlyLimit", Integer, nullable=False, default=100
-    )
+    hourly_limit: Mapped[int] = mapped_column("hourlyLimit", Integer, nullable=False, default=100)
     created_at: Mapped[datetime] = mapped_column(
         "createdAt", DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     revoked_at: Mapped[datetime | None] = mapped_column("revokedAt", DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(
+        "expiresAt", DateTime(timezone=True), nullable=False
+    )
+    last_used_at: Mapped[datetime | None] = mapped_column("lastUsedAt", DateTime(timezone=True))
+    rotated_from_id: Mapped[int | None] = mapped_column(
+        "rotatedFromId", ForeignKey("ApiKey.id", ondelete="SET NULL"), index=True
+    )
 
     account: Mapped[DeveloperAccount] = relationship(back_populates="api_keys")
     usage_events: Mapped[list["ApiUsage"]] = relationship(
@@ -214,3 +220,21 @@ class GrafanaNotification(Base):
     created_at: Mapped[datetime] = mapped_column(
         "createdAt", DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class MaintenanceRun(Base):
+    """Idempotency and audit record for scheduled platform maintenance."""
+
+    __tablename__ = "MaintenanceRun"
+    __table_args__ = (Index("ix_maintenance_job_time", "jobName", "startedAt"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_name: Mapped[str] = mapped_column("jobName", String(80), nullable=False)
+    run_id: Mapped[str] = mapped_column("runId", String(120), nullable=False, unique=True)
+    status: Mapped[str] = mapped_column(String(24), nullable=False, default="running")
+    rows_affected: Mapped[int] = mapped_column("rowsAffected", Integer, nullable=False, default=0)
+    detail: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    started_at: Mapped[datetime] = mapped_column(
+        "startedAt", DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    finished_at: Mapped[datetime | None] = mapped_column("finishedAt", DateTime(timezone=True))

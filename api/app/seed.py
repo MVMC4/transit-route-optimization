@@ -127,11 +127,13 @@ def seed_demo_account() -> bool:
                     email=settings.demo_account_email,
                     display_name=settings.demo_account_name,
                     password_hash=password_hash,
+                    role="admin",
                 )
             )
         else:
             account.display_name = settings.demo_account_name
             account.password_hash = password_hash
+            account.role = "admin"
         session.commit()
     return True
 

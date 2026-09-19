@@ -38,7 +38,11 @@ def road_preview(
     coordinates = tuple((point.long, point.lat) for point in waypoints)
     try:
         return fetch_road_geometry(
-            settings.road_router_url, coordinates, settings.road_router_timeout_seconds
+            settings.road_router_url,
+            coordinates,
+            settings.road_router_timeout_seconds,
+            tuple(settings.road_router_allowed_host_list),
+            settings.road_router_max_response_bytes,
         )
     except RoadGeometryError as error:
         raise HTTPException(

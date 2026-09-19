@@ -13,9 +13,7 @@ def normalize_plain_text(value: str) -> str:
     """Trim text and remove control bytes without attempting unsafe HTML rendering."""
 
     return "".join(
-        character
-        for character in value.strip()
-        if character >= " " or character in "\n\t"
+        character for character in value.strip() if character >= " " or character in "\n\t"
     )
 
 
@@ -285,6 +283,9 @@ class ApiKeyRead(ApiModel):
     hourly_limit: int = Field(serialization_alias="hourlyLimit")
     created_at: datetime = Field(serialization_alias="createdAt")
     revoked_at: datetime | None = Field(serialization_alias="revokedAt")
+    expires_at: datetime = Field(serialization_alias="expiresAt")
+    last_used_at: datetime | None = Field(serialization_alias="lastUsedAt")
+    rotated_from_id: int | None = Field(serialization_alias="rotatedFromId")
 
 
 class ApiKeyCreated(ApiKeyRead):

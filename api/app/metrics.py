@@ -22,6 +22,21 @@ GRAFANA_NOTIFICATIONS = Counter(
     "Grafana alert webhook notifications accepted by state and severity.",
     ("state", "severity"),
 )
+SECURITY_REJECTIONS = Counter(
+    "tsela_security_rejections_total",
+    "Requests rejected at a security boundary.",
+    ("reason",),
+)
+AUTH_FAILURES = Counter(
+    "tsela_auth_failures_total",
+    "Authentication failures by bounded surface and reason.",
+    ("surface", "reason"),
+)
+RATE_LIMIT_REJECTIONS = Counter(
+    "tsela_rate_limit_rejections_total",
+    "Requests rejected by bounded quota type.",
+    ("limit",),
+)
 
 
 async def metrics_middleware(request: Request, call_next):

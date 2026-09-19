@@ -7,6 +7,7 @@ from prometheus_client import make_asgi_app
 
 from app.config import get_settings
 from app.metrics import metrics_middleware
+from app.request_context import request_boundary_middleware
 from app.routers import (
     admin,
     community,
@@ -17,6 +18,7 @@ from app.routers import (
     public_v1,
     routes,
 )
+from app.telemetry import configure_telemetry
 
 settings = get_settings()
 
@@ -45,7 +47,9 @@ app.include_router(community.router)
 app.include_router(developer.router)
 app.include_router(public_v1.router)
 app.middleware("http")(metrics_middleware)
+app.middleware("http")(request_boundary_middleware)
 app.mount("/metrics", make_asgi_app())
+configure_telemetry(app, settings)
 
 
 @app.middleware("http")

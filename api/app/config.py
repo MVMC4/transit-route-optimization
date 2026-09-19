@@ -21,11 +21,17 @@ class Settings(BaseSettings):
     max_walk_meters: float = 2500
     max_transfer_meters: float = 400
     road_router_url: str = "https://router.project-osrm.org"
+    road_router_allowed_hosts: str = "router.project-osrm.org"
     road_router_timeout_seconds: float = 15
+    road_router_max_response_bytes: int = 2_000_000
     developer_session_days: int = 30
+    api_key_lifetime_days: int = 90
+    api_key_rotation_warning_days: int = 14
+    api_usage_retention_days: int = 400
     default_monthly_api_quota: int = 10000
     default_hourly_api_limit: int = 100
     invalid_key_attempts_per_hour: int = 20
+    max_request_body_bytes: int = 1_000_000
     estimated_cost_per_1000_requests_usd: float | None = None
     password_reset_debug: bool = False
     demo_account_enabled: bool = False
@@ -36,12 +42,26 @@ class Settings(BaseSettings):
     grafana_public_url: str = "http://localhost:3004"
     prometheus_public_url: str = "http://localhost:9090"
     prometheus_internal_url: str = "http://prometheus:9090"
+    deployment_environment: str = "development"
+    otel_enabled: bool = False
+    otel_service_name: str = "tsela-api"
+    otel_exporter_otlp_endpoint: str = "http://tempo:4317"
+    otel_exporter_otlp_insecure: bool = True
+    otel_trace_sample_ratio: float = 0.1
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @property
+    def road_router_allowed_host_list(self) -> list[str]:
+        return [
+            host.strip().lower()
+            for host in self.road_router_allowed_hosts.split(",")
+            if host.strip()
+        ]
 
 
 @lru_cache

@@ -13,6 +13,7 @@ from app.config import get_settings
 from app.database import get_db
 from app.metrics import GRAFANA_NOTIFICATIONS
 from app.models import ApiKey, ApiUsage, DeveloperAccount, GrafanaNotification
+from app.routers.developer import get_current_account
 from app.schemas import (
     AdminAccountRead,
     AdminOverviewResponse,
@@ -22,6 +23,14 @@ from app.schemas import (
 )
 
 router = APIRouter(prefix="/api/admin", tags=["Admin operations"])
+
+
+def require_admin(account: DeveloperAccount = Depends(get_current_account)) -> DeveloperAccount:
+    """Enforce administrator role at the API boundary, independent of UI visibility."""
+
+    if account.role != "admin":
+        raise HTTPException(status_code=403, detail="Administrator access is required")
+    return account
 
 
 async def _prometheus_value(client: httpx.AsyncClient, base_url: str, query: str) -> float | None:
@@ -38,7 +47,9 @@ async def _prometheus_value(client: httpx.AsyncClient, base_url: str, query: str
 
 
 @router.get("/overview", response_model=AdminOverviewResponse)
-def admin_overview(session: Session = Depends(get_db)) -> AdminOverviewResponse:
+def admin_overview(
+    _: DeveloperAccount = Depends(require_admin), session: Session = Depends(get_db)
+) -> AdminOverviewResponse:
     since = datetime.now(UTC) - timedelta(hours=24)
     paths = session.execute(
         select(ApiUsage.path, func.count(ApiUsage.id))
@@ -52,15 +63,18 @@ def admin_overview(session: Session = Depends(get_db)) -> AdminOverviewResponse:
         accounts=session.scalar(select(func.count()).select_from(DeveloperAccount)) or 0,
         active_api_keys=session.scalar(
             select(func.count()).select_from(ApiKey).where(ApiKey.revoked_at.is_(None))
-        ) or 0,
+        )
+        or 0,
         requests_24h=session.scalar(
             select(func.count()).select_from(ApiUsage).where(ApiUsage.occurred_at >= since)
-        ) or 0,
+        )
+        or 0,
         firing_alerts=session.scalar(
-            select(func.count()).select_from(GrafanaNotification).where(
-                GrafanaNotification.state == "firing"
-            )
-        ) or 0,
+            select(func.count())
+            .select_from(GrafanaNotification)
+            .where(GrafanaNotification.state == "firing")
+        )
+        or 0,
         usage_paths=[AdminUsagePathRead(path=path, requests=count) for path, count in paths],
         grafana_url=settings.grafana_public_url,
         prometheus_url=settings.prometheus_public_url,
@@ -68,7 +82,7 @@ def admin_overview(session: Session = Depends(get_db)) -> AdminOverviewResponse:
 
 
 @router.get("/system", response_model=AdminSystemMetrics)
-async def admin_system_metrics() -> AdminSystemMetrics:
+async def admin_system_metrics(_: DeveloperAccount = Depends(require_admin)) -> AdminSystemMetrics:
     settings = get_settings()
     queries = {
         "api_up": 'up{job="tsela-api"}',
@@ -122,9 +136,7 @@ async def admin_system_metrics() -> AdminSystemMetrics:
         api_open_fds=values["api_open_fds"],
         request_p95_seconds=values["request_p95_seconds"],
         error_rate_percent=values["error_rate_percent"],
-        database_up=(
-            None if values["database_up"] is None else values["database_up"] == 1
-        ),
+        database_up=(None if values["database_up"] is None else values["database_up"] == 1),
         database_memory_bytes=values["database_memory_bytes"],
         database_size_bytes=values["database_size_bytes"],
         database_connections=values["database_connections"],
@@ -137,6 +149,7 @@ async def admin_system_metrics() -> AdminSystemMetrics:
 @router.get("/accounts", response_model=list[AdminAccountRead])
 def admin_accounts(
     limit: int = Query(default=50, ge=1, le=200),
+    _: DeveloperAccount = Depends(require_admin),
     session: Session = Depends(get_db),
 ) -> list[AdminAccountRead]:
     key_count = (
@@ -195,13 +208,12 @@ def admin_accounts(
 @router.get("/notifications", response_model=list[GrafanaNotificationRead])
 def admin_notifications(
     limit: int = Query(default=50, ge=1, le=200),
+    _: DeveloperAccount = Depends(require_admin),
     session: Session = Depends(get_db),
 ) -> list[GrafanaNotificationRead]:
     return list(
         session.scalars(
-            select(GrafanaNotification)
-            .order_by(GrafanaNotification.created_at.desc())
-            .limit(limit)
+            select(GrafanaNotification).order_by(GrafanaNotification.created_at.desc()).limit(limit)
         )
     )
 

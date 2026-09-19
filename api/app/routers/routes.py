@@ -77,6 +77,8 @@ def geometry_for_coordinates(
             settings.road_router_url,
             coordinates,
             settings.road_router_timeout_seconds,
+            tuple(settings.road_router_allowed_host_list),
+            settings.road_router_max_response_bytes,
         )
         return RouteGeometryResponse(
             route_id=route_id,
@@ -214,9 +216,7 @@ def route_network(session: Session = Depends(get_db)) -> list[NetworkRouteRead]:
             zip(
                 route_ids,
                 executor.map(
-                    lambda route_id: geometry_for_coordinates(
-                        route_id, coordinate_sets[route_id]
-                    ),
+                    lambda route_id: geometry_for_coordinates(route_id, coordinate_sets[route_id]),
                     route_ids,
                 ),
                 strict=True,
