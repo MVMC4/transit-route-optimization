@@ -5,7 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { SurfaceShell } from "@/components/surface-shell";
 
 export const metadata: Metadata = {
-  title: "TransitOS Operations",
+  title: "Tsela Operations",
   description: "Create, maintain, and monitor the Gaborone route network.",
 };
 

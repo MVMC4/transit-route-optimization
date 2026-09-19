@@ -6,6 +6,8 @@ import hashlib
 import hmac
 import secrets
 
+from app.config import get_settings
+
 PBKDF2_ITERATIONS = 600_000
 
 
@@ -41,7 +43,10 @@ def issue_api_key() -> str:
 
 
 def hash_token(token: str) -> str:
-    return hashlib.sha256(token.encode()).hexdigest()
+    secret = get_settings().token_hash_secret
+    return hmac.new(
+        secret.encode(), token.encode(), hashlib.sha256
+    ).hexdigest()
 
 
 def key_prefix(key: str) -> str:

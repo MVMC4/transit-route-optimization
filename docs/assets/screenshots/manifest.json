@@ -1,0 +1,230 @@
+{
+  "generatedAt": "2026-09-19T19:43:23.457Z",
+  "viewport": "1440x960",
+  "pages": [
+    {
+      "group": "marketing",
+      "name": "home",
+      "route": "/",
+      "filename": "marketing-home.jpg",
+      "title": "Tsela | Find your combi route in Gaborone",
+      "finalUrl": "http://localhost:3000/"
+    },
+    {
+      "group": "marketing",
+      "name": "services",
+      "route": "/services",
+      "filename": "marketing-services.jpg",
+      "title": "Product | Tsela",
+      "finalUrl": "http://localhost:3000/services"
+    },
+    {
+      "group": "marketing",
+      "name": "developers",
+      "route": "/developers",
+      "filename": "marketing-developers.jpg",
+      "title": "Developers | Tsela",
+      "finalUrl": "http://localhost:3000/developers"
+    },
+    {
+      "group": "marketing",
+      "name": "company",
+      "route": "/company",
+      "filename": "marketing-company.jpg",
+      "title": "About | Tsela",
+      "finalUrl": "http://localhost:3000/company"
+    },
+    {
+      "group": "marketing",
+      "name": "brand",
+      "route": "/brand",
+      "filename": "marketing-brand.jpg",
+      "title": "Brand and icons | Tsela",
+      "finalUrl": "http://localhost:3000/brand"
+    },
+    {
+      "group": "marketing",
+      "name": "journal",
+      "route": "/journal",
+      "filename": "marketing-journal.jpg",
+      "title": "Build blog | Tsela",
+      "finalUrl": "http://localhost:3000/journal"
+    },
+    {
+      "group": "marketing",
+      "name": "journal-road-aligned-routes",
+      "route": "/journal/2026-09-07-road-aligned-routes",
+      "filename": "marketing-journal-road-aligned-routes.jpg",
+      "title": "From straight lines to roads | Tsela",
+      "finalUrl": "http://localhost:3000/journal/2026-09-07-road-aligned-routes"
+    },
+    {
+      "group": "marketing",
+      "name": "journal-rider-home",
+      "route": "/journal/2026-09-08-rider-home",
+      "filename": "marketing-journal-rider-home.jpg",
+      "title": "A calmer home for the rider app | Tsela",
+      "finalUrl": "http://localhost:3000/journal/2026-09-08-rider-home"
+    },
+    {
+      "group": "marketing",
+      "name": "privacy",
+      "route": "/legal/privacy",
+      "filename": "marketing-privacy.jpg",
+      "title": "Privacy policy | Tsela",
+      "finalUrl": "http://localhost:3000/legal/privacy"
+    },
+    {
+      "group": "marketing",
+      "name": "terms",
+      "route": "/legal/terms",
+      "filename": "marketing-terms.jpg",
+      "title": "Terms of service | Tsela",
+      "finalUrl": "http://localhost:3000/legal/terms"
+    },
+    {
+      "group": "marketing",
+      "name": "refunds",
+      "route": "/legal/refunds",
+      "filename": "marketing-refunds.jpg",
+      "title": "Refund policy | Tsela",
+      "finalUrl": "http://localhost:3000/legal/refunds"
+    },
+    {
+      "group": "marketing",
+      "name": "cookies",
+      "route": "/legal/cookies",
+      "filename": "marketing-cookies.jpg",
+      "title": "Cookie policy | Tsela",
+      "finalUrl": "http://localhost:3000/legal/cookies"
+    },
+    {
+      "group": "rider",
+      "name": "home",
+      "route": "/",
+      "filename": "rider-home.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/"
+    },
+    {
+      "group": "rider",
+      "name": "plan",
+      "route": "/plan",
+      "filename": "rider-plan.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/plan"
+    },
+    {
+      "group": "rider",
+      "name": "pathfinder",
+      "route": "/pathfind",
+      "filename": "rider-pathfinder.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/pathfind"
+    },
+    {
+      "group": "rider",
+      "name": "routes",
+      "route": "/routes",
+      "filename": "rider-routes.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/routes"
+    },
+    {
+      "group": "rider",
+      "name": "live-route",
+      "route": "/live/1",
+      "filename": "rider-live-route.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/live/1"
+    },
+    {
+      "group": "rider",
+      "name": "community",
+      "route": "/community",
+      "filename": "rider-community.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/community"
+    },
+    {
+      "group": "rider",
+      "name": "guide",
+      "route": "/guide",
+      "filename": "rider-guide.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/guide"
+    },
+    {
+      "group": "rider",
+      "name": "login",
+      "route": "/account/login",
+      "filename": "rider-login.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/account/login"
+    },
+    {
+      "group": "rider",
+      "name": "recover",
+      "route": "/account/recover",
+      "filename": "rider-recover.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/account/recover"
+    },
+    {
+      "group": "rider",
+      "name": "reset",
+      "route": "/account/reset",
+      "filename": "rider-reset.jpg",
+      "title": "Tsela Rider | Find your way through Gaborone",
+      "finalUrl": "http://localhost:3002/account/reset"
+    },
+    {
+      "group": "admin",
+      "name": "login",
+      "route": "/login",
+      "filename": "admin-login.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/login"
+    },
+    {
+      "group": "admin",
+      "name": "dashboard",
+      "route": "/dashboard",
+      "filename": "admin-dashboard.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/dashboard"
+    },
+    {
+      "group": "admin",
+      "name": "routes",
+      "route": "/routes",
+      "filename": "admin-routes.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/routes"
+    },
+    {
+      "group": "admin",
+      "name": "route-detail",
+      "route": "/routes/1",
+      "filename": "admin-route-detail.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/routes/1"
+    },
+    {
+      "group": "admin",
+      "name": "accounts",
+      "route": "/accounts",
+      "filename": "admin-accounts.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/accounts"
+    },
+    {
+      "group": "admin",
+      "name": "observability",
+      "route": "/observability",
+      "filename": "admin-observability.jpg",
+      "title": "Tsela Operations",
+      "finalUrl": "http://localhost:3001/observability"
+    }
+  ]
+}

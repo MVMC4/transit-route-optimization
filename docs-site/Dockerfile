@@ -17,7 +17,13 @@ ENV NEXT_PUBLIC_DEMO_MODE=$NEXT_PUBLIC_DEMO_MODE
 ENV NEXT_PUBLIC_DEMO_EMAIL=$NEXT_PUBLIC_DEMO_EMAIL
 ENV NEXT_PUBLIC_DEMO_PASSWORD=$NEXT_PUBLIC_DEMO_PASSWORD
 
-RUN npm run build
+RUN npm run build && chown -R node:node /app/.next
+
+USER node
 
 EXPOSE 3003
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3003/ || exit 1
+
 CMD ["npm", "start"]

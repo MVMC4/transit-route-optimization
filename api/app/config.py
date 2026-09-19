@@ -2,11 +2,14 @@
 
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+LOCAL_TOKEN_HASH_SECRET = "local-development-token-hash-secret-change-me"
 
 
 class Settings(BaseSettings):
-    app_name: str = "TransitOS API"
+    app_name: str = "Tsela API"
     app_version: str = "1.0.0"
     developer_portal_url: str = "http://localhost:3003"
     api_docs_enabled: bool = False
@@ -31,6 +34,7 @@ class Settings(BaseSettings):
     default_monthly_api_quota: int = 10000
     default_hourly_api_limit: int = 100
     invalid_key_attempts_per_hour: int = 20
+    token_hash_secret: str = LOCAL_TOKEN_HASH_SECRET
     max_request_body_bytes: int = 1_000_000
     estimated_cost_per_1000_requests_usd: float | None = None
     password_reset_debug: bool = False
@@ -50,6 +54,15 @@ class Settings(BaseSettings):
     otel_trace_sample_ratio: float = 0.1
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    @model_validator(mode="after")
+    def require_production_token_secret(self) -> "Settings":
+        if (
+            self.deployment_environment.lower() == "production"
+            and self.token_hash_secret == LOCAL_TOKEN_HASH_SECRET
+        ):
+            raise ValueError("TOKEN_HASH_SECRET must be set to a production secret")
+        return self
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -4,8 +4,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TransitOS Rider",
-    short_name: "TransitOS",
+    name: "Tsela Rider",
+    short_name: "Tsela",
     description: "Find practical combi routes across Gaborone.",
     start_url: "/",
     display: "standalone",

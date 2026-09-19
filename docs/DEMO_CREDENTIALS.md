@@ -15,10 +15,11 @@ docker compose up -d --build
 | Email | `demo@tsela.local` |
 | Password | `TselaDemo2026!` |
 
-Sign in at the developer portal (http://localhost:3003) — it doubles as the
-public landing page and the auth gateway for both the docs' interactive
-console and the operations dashboard. This is the one seeded account; there
-is no separate admin-only login documented elsewhere in this repo.
+Sign in at the developer portal (http://localhost:3003) to access the protected
+Fumadocs reference and developer console. The same local demo account is seeded
+with the `admin` role and can be used on the separate operations sign-in page at
+http://localhost:3001/login. The API checks that role on every admin request;
+hiding navigation is never treated as authorization.
 
 ## URLs
 
@@ -29,6 +30,17 @@ is no separate admin-only login documented elsewhere in this repo.
 | Rider app | http://localhost:3002 | 3002 |
 | Developer portal / docs (`docs-site`, Fumadocs) | http://localhost:3003 | 3003 |
 | API (`api`, FastAPI) | http://localhost:8000 | 8000 |
+| Grafana | http://localhost:3004 | 3004 |
+| Prometheus | http://localhost:9090 | 9090 |
+
+## Grafana local login
+
+| Field | Value |
+| --- | --- |
+| Username | `admin` |
+| Password | `GRAFANA_ADMIN_PASSWORD`, defaulting to `admin` for local Compose only |
+
+Start it with `docker compose --profile observability up -d`. Anonymous access and public sign-up are disabled. Set a non-default `GRAFANA_ADMIN_PASSWORD` before using any shared environment; production credentials belong in a secret manager, not this file.
 
 ## API
 
@@ -46,11 +58,6 @@ A first request once you have a key:
 curl -H "X-API-Key: $TSELA_API_KEY" "http://localhost:8000/v1/routes"
 ```
 
-## Note on what wasn't independently verified here
+## Scope
 
-This file was written from the developer portal's own displayed
-credentials and `compose.yaml`'s port mappings, not by re-testing every
-login path end-to-end in this pass — if the admin dashboard's auth gate
-behaves differently than described (e.g. a separate account is actually
-required), treat this file as the starting point to correct, not as
-independently confirmed.
+These values are convenience credentials for the local Compose stack. They are not valid production credentials and must never be copied into a deployed environment.

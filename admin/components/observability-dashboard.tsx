@@ -42,7 +42,7 @@ export function ObservabilityDashboard() {
     <section className="ops-observability-metrics">
       <article><span>01 · TRAFFIC</span><strong>{overview?.requests24h ?? "—"}</strong><p>API calls in the last 24 hours</p></article>
       <article><span>02 · ACCESS</span><strong>{overview?.activeApiKeys ?? "—"}</strong><p>Active developer API keys</p></article>
-      <a href={overview?.grafanaUrl ?? "http://localhost:3004"} target="_blank" rel="noreferrer"><span>03 · GRAFANA</span><strong>Open ↗</strong><p>Dashboards, rules, and alert history</p></a>
+      <a href={overview?.grafanaUrl ?? "http://localhost:3004"} target="_blank" rel="noreferrer"><span>03 · GRAFANA</span><strong>Open ↗</strong><p>Dashboards, rules, and alert history</p><small>Local: admin · password from GRAFANA_ADMIN_PASSWORD</small></a>
       <a href={overview?.prometheusUrl ?? "http://localhost:9090"} target="_blank" rel="noreferrer"><span>04 · PROMETHEUS</span><strong>Query ↗</strong><p>Targets, rules, and raw time series</p></a>
     </section>
 

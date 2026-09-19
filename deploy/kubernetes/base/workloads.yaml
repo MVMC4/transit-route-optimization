@@ -8,7 +8,8 @@ spec:
     metadata: { labels: { app: api, slot: blue } }
     spec:
       serviceAccountName: tsela-runtime
-      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: { type: RuntimeDefault } }
       containers:
         - name: api
           image: ghcr.io/replace-me/tsela-api:replace-with-immutable-sha
@@ -17,7 +18,7 @@ spec:
           resources: { requests: { cpu: 150m, memory: 256Mi }, limits: { cpu: "1", memory: 1Gi } }
           readinessProbe: { httpGet: { path: /api/health, port: 8000 }, initialDelaySeconds: 8, periodSeconds: 10 }
           livenessProbe: { httpGet: { path: /api/health, port: 8000 }, initialDelaySeconds: 20, periodSeconds: 20 }
-          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
 ---
 apiVersion: v1
 kind: Service
@@ -49,8 +50,10 @@ spec:
     metadata: { labels: { app: marketing } }
     spec:
       serviceAccountName: tsela-runtime
-      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
-      containers: [{ name: marketing, image: ghcr.io/replace-me/tsela-marketing:replace-with-immutable-sha, ports: [{ containerPort: 3000 }], resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }, securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } } }]
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers: [{ name: marketing, image: ghcr.io/replace-me/tsela-marketing:replace-with-immutable-sha, ports: [{ containerPort: 3000 }], resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }, volumeMounts: [{ name: next-cache, mountPath: /app/.next/cache }, { name: tmp, mountPath: /tmp }], securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } } }]
+      volumes: [{ name: next-cache, emptyDir: {} }, { name: tmp, emptyDir: {} }]
 ---
 apiVersion: v1
 kind: Service
@@ -67,8 +70,10 @@ spec:
     metadata: { labels: { app: rider } }
     spec:
       serviceAccountName: tsela-runtime
-      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
-      containers: [{ name: rider, image: ghcr.io/replace-me/tsela-rider:replace-with-immutable-sha, ports: [{ containerPort: 3002 }], resources: { requests: { cpu: 75m, memory: 160Mi }, limits: { cpu: 750m, memory: 768Mi } }, securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } } }]
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers: [{ name: rider, image: ghcr.io/replace-me/tsela-rider:replace-with-immutable-sha, ports: [{ containerPort: 3002 }], resources: { requests: { cpu: 75m, memory: 160Mi }, limits: { cpu: 750m, memory: 768Mi } }, volumeMounts: [{ name: next-cache, mountPath: /app/.next/cache }, { name: tmp, mountPath: /tmp }], securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } } }]
+      volumes: [{ name: next-cache, emptyDir: {} }, { name: tmp, emptyDir: {} }]
 ---
 apiVersion: v1
 kind: Service
@@ -85,8 +90,10 @@ spec:
     metadata: { labels: { app: docs } }
     spec:
       serviceAccountName: tsela-runtime
-      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
-      containers: [{ name: docs, image: ghcr.io/replace-me/tsela-docs:replace-with-immutable-sha, ports: [{ containerPort: 3003 }], envFrom: [{ secretRef: { name: tsela-runtime-secrets } }], resources: { requests: { cpu: 75m, memory: 160Mi }, limits: { cpu: 750m, memory: 768Mi } }, securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } } }]
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers: [{ name: docs, image: ghcr.io/replace-me/tsela-docs:replace-with-immutable-sha, ports: [{ containerPort: 3003 }], envFrom: [{ secretRef: { name: tsela-runtime-secrets } }], resources: { requests: { cpu: 75m, memory: 160Mi }, limits: { cpu: 750m, memory: 768Mi } }, volumeMounts: [{ name: next-cache, mountPath: /app/.next/cache }, { name: tmp, mountPath: /tmp }], securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } } }]
+      volumes: [{ name: next-cache, emptyDir: {} }, { name: tmp, emptyDir: {} }]
 ---
 apiVersion: v1
 kind: Service
@@ -103,8 +110,10 @@ spec:
     metadata: { labels: { app: admin } }
     spec:
       serviceAccountName: tsela-runtime
-      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
-      containers: [{ name: admin, image: ghcr.io/replace-me/tsela-admin:replace-with-immutable-sha, ports: [{ containerPort: 3001 }], resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }, securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: [ALL] } } }]
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers: [{ name: admin, image: ghcr.io/replace-me/tsela-admin:replace-with-immutable-sha, ports: [{ containerPort: 3001 }], resources: { requests: { cpu: 50m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }, volumeMounts: [{ name: next-cache, mountPath: /app/.next/cache }, { name: tmp, mountPath: /tmp }], securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } } }]
+      volumes: [{ name: next-cache, emptyDir: {} }, { name: tmp, emptyDir: {} }]
 ---
 apiVersion: v1
 kind: Service

@@ -12,8 +12,13 @@ COPY . .
 ARG NEXT_PUBLIC_API_BASE=http://localhost:8000
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
 
-RUN npm run build
+RUN npm run build && chown -R node:node /app/.next
+
+USER node
 
 EXPOSE 3002
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3002/ || exit 1
 
 CMD ["npm", "start"]

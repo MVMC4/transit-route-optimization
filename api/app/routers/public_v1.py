@@ -2,8 +2,8 @@
 
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
-from sqlalchemy import func, select
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
@@ -94,9 +94,18 @@ def require_api_key(
 
 @router.get("/routes", response_model=list[RouteRead])
 def v1_routes(
-    _: ApiKey = Depends(require_api_key), session: Session = Depends(get_db)
+    search: str | None = Query(default=None, max_length=120),
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=50, ge=1, le=100),
+    _: ApiKey = Depends(require_api_key),
+    session: Session = Depends(get_db),
 ) -> list[Route]:
-    return list(session.scalars(select(Route).order_by(Route.created_at.desc())))
+    query = select(Route)
+    if search:
+        term = f"%{search.strip()}%"
+        query = query.where(or_(Route.name.ilike(term), Route.description.ilike(term)))
+    query = query.order_by(Route.created_at.desc()).offset(offset).limit(limit)
+    return list(session.scalars(query))
 
 
 @router.get("/routes/{route_id}/geometry", response_model=RouteGeometryResponse)

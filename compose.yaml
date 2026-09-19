@@ -32,6 +32,7 @@ services:
       DEMO_ACCOUNT_EMAIL: demo@tsela.local
       DEMO_ACCOUNT_PASSWORD: TselaDemo2026!
       GRAFANA_WEBHOOK_SECRET: ${GRAFANA_WEBHOOK_SECRET:-local-grafana-webhook}
+      TOKEN_HASH_SECRET: ${TOKEN_HASH_SECRET:-local-development-token-hash-secret-change-me}
       GRAFANA_PUBLIC_URL: http://localhost:3004
       PROMETHEUS_PUBLIC_URL: http://localhost:9090
       PROMETHEUS_INTERNAL_URL: http://prometheus:9090
@@ -140,6 +141,8 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_SERVER_ROOT_URL: http://localhost:3004
+      GF_USERS_DEFAULT_THEME: dark
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/tsela-platform.json
       GRAFANA_WEBHOOK_SECRET: ${GRAFANA_WEBHOOK_SECRET:-local-grafana-webhook}
     volumes:
       - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro

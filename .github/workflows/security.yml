@@ -44,5 +44,5 @@ jobs:
       - run: pip install pip-audit && pip-audit api
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: for app in marketing rider admin docs-site; do (cd "$app" && npm audit --audit-level=high); done
+      - run: for app in marketing rider admin docs-site web; do (cd "$app" && npm audit --audit-level=high); done
         shell: bash

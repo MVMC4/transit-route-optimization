@@ -6,9 +6,9 @@ import { SurfaceShell } from "@/components/surface-shell";
 import { OfflineBanner } from "@/components/offline-banner";
 
 export const metadata: Metadata = {
-  title: "TransitOS Rider | Find your way through Gaborone",
+  title: "Tsela Rider | Find your way through Gaborone",
   description: "Choose a destination and find practical combi routes across Gaborone.",
-  applicationName: "TransitOS Rider",
+  applicationName: "Tsela Rider",
   manifest: "/manifest.webmanifest",
 };
 

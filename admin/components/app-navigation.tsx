@@ -40,6 +40,10 @@ export function AppNavigation() {
 
   return (
     <nav className="sidebar" aria-label="Primary navigation">
+      <Link className="sidebar-brand" href="/dashboard" aria-label="Tsela operations home">
+        <span className="brand-logo" aria-hidden="true">T</span>
+        <span className="brand-name">Tsela <small>Operations</small></span>
+      </Link>
       <ul className="nav-links">
         {items.map((item) => (
           <li key={item.href}>
@@ -55,7 +59,7 @@ export function AppNavigation() {
         ))}
       </ul>
 
-      <div className="sidebar-footer"><span className="status-pip" /><span className="status-text">Live</span></div>
+      <div className="sidebar-footer"><span className="status-pip" /><span className="status-text">Platform connected</span></div>
     </nav>
   );
 }

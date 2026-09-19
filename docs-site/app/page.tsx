@@ -9,8 +9,8 @@ export default function DeveloperLanding() {
     <HomeLayout
       nav={{ title: <span className="fuma-brand"><b>T</b><span>Tsela <small>Developers</small></span></span>, url: "/" }}
       links={[
-        { type: "main", text: "API reference", url: "/reference/routes/list" },
-        { type: "button", text: "Dashboard", url: "/console" },
+        { type: "main", text: "Documentation", url: "/reference" },
+        { type: "button", text: "Sign in", url: "/#access" },
       ]}
       className="developer-landing"
     >
@@ -29,7 +29,7 @@ export default function DeveloperLanding() {
       </section>
 
       <section className="developer-portal-paths" aria-label="After sign in">
-        <Link href="/reference/routes/list"><span>01 / REFERENCE</span><strong>Browse the API guide</strong><small>Endpoint details, examples, and responses</small></Link>
+        <Link href="/reference"><span>01 / DOCUMENTATION</span><strong>Browse the protected guides</strong><small>Sign in for endpoints, examples, and production runbooks</small></Link>
         <Link href="/console"><span>02 / DASHBOARD</span><strong>Manage your access</strong><small>Keys, limits, and request activity</small></Link>
         <Link href="/reference/guides/production-architecture"><span>03 / OPERATIONS</span><strong>Read the production runbooks</strong><small>Architecture, backup, recovery, uploads, identity, and launch gates</small></Link>
       </section>

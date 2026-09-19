@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning><body><RootProvider search={{ SearchDialog: TselaSearchDialog, links: [["API reference", "/reference/routes/list"], ["Dashboard", "/console"]] }}>{children}</RootProvider></body></html>;
+  return <html lang="en" suppressHydrationWarning><body><RootProvider search={{ SearchDialog: TselaSearchDialog, links: [["Documentation overview", "/reference"], ["API reference", "/reference/routes/list"], ["Developer console", "/console"]] }}>{children}</RootProvider></body></html>;
 }

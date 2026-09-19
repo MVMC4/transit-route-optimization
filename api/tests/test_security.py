@@ -1,3 +1,6 @@
+import pytest
+
+from app.config import LOCAL_TOKEN_HASH_SECRET, Settings
 from app.schemas import CommunityPostCreate
 from app.services.rate_limit import InvalidCredentialGate
 from app.services.security import hash_password, hash_token, issue_api_key, verify_password
@@ -18,6 +21,15 @@ def test_api_keys_are_prefixed_and_stored_as_digests() -> None:
     assert key.startswith("tos_live_")
     assert key not in hash_token(key)
     assert len(hash_token(key)) == 64
+
+
+def test_production_rejects_the_local_token_hash_secret() -> None:
+    with pytest.raises(ValueError, match="TOKEN_HASH_SECRET"):
+        Settings(
+            _env_file=None,
+            deployment_environment="production",
+            token_hash_secret=LOCAL_TOKEN_HASH_SECRET,
+        )
 
 
 def test_community_text_is_bounded_plain_data() -> None:

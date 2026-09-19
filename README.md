@@ -1,36 +1,97 @@
-# TransitOS / Tsela
+# Tsela
 
-![Tsela marketing homepage](docs/assets/screenshots/marketing-home.png)
+![Tsela marketing homepage showing the route-first product experience](docs/assets/screenshots/marketing-home.jpg)
 
-A Gaborone-first platform for finding your way around an informal transit network that, until now, only lived in people's heads. TransitOS turns the combi routes locals already know into a searchable map: pick a place, get real road-following directions, see where to board and where to ask the driver to stop.
+A Gaborone-first platform for finding your way around an informal transit network that, until now, only lived in people's heads. Tsela turns the combi routes locals already know into a searchable map: pick a place, get real road-following directions, see where to board and where to ask the driver to stop.
 
-**Tsela** is the working rider-facing brand for this project (public rename pending domain and trademark checks). Under the hood it's a five-surface platform — marketing site, rider app, operations dashboard, developer API, and an authenticated docs portal — backed by a FastAPI service and a PostGIS-routed PostgreSQL database.
+**Tsela** is the working public brand (pending domain, local-language, and trademark checks). The repository's older TransitOS name remains only in a few internal documents while they are migrated. Under the hood this is a five-surface platform — marketing site, rider app, operations dashboard, developer API, and an authenticated docs portal — backed by FastAPI and a PostGIS-routed PostgreSQL database.
 
 ## Why this exists
 
-Gaborone's combis run understood, repeatable corridors, but that knowledge is local and informal. Ask "which combi gets me near the mall, and where do I get off?" and there's usually no map to answer it — just word of mouth. TransitOS makes that shared local knowledge visible and searchable: a rider picks an origin and destination and gets real combi options with a road-following route; a field operator can record a corridor by walking or riding it; community reports add current fare and crowding context; and the same API is open to anyone who wants to build on top of it.
+Gaborone's combis run understood, repeatable corridors, but that knowledge is local and informal. Ask "which combi gets me near the mall, and where do I get off?" and there's usually no map to answer it — just word of mouth. Tsela makes that shared local knowledge visible and searchable: a rider picks an origin and destination and gets real combi options with a road-following route; a field operator can record a corridor by walking or riding it; community reports add current fare and crowding context; and the same API is open to anyone who wants to build on top of it.
 
 It's also a working example of building a small platform properly: separate deployable surfaces instead of one tangled app, an API that's actually documented (not just annotated), sessions that get verified server-side rather than trusted on cookie presence, and honest docs about what's production-ready versus scaffolded.
 
-## Screenshots
+## Product gallery
 
-Real captures from the running Compose stack, not mockups.
+These are real 1440×960 captures from the authenticated local Compose stack on 19 September 2026—not mockups. The [capture manifest](docs/assets/screenshots/manifest.json) records every included route and final URL. Run `node scripts/capture-readme-gallery.cjs` while the stack is healthy to refresh the gallery. Developer-documentation images are intentionally excluded until [WO-15](docs/WORK_ORDER.md) completes the internal/public split and restrained Fumadocs reskin.
 
-| Developer portal | Operations dashboard |
-| --- | --- |
-| ![Developer portal — Fumadocs-based API reference and live demo console](docs/assets/screenshots/docs-landing.png) | ![Operations dashboard — routes, stops, network density, service health](docs/assets/screenshots/admin-dashboard.png) |
-
-**Rider app** — home, trip planning, the route list, community reports, and the rider guide:
+### Rider experience
 
 | Home | Plan a trip |
 | --- | --- |
-| ![Rider home](docs/assets/screenshots/rider-home.png) | ![Plan a trip](docs/assets/screenshots/rider-plan.png) |
+| ![Rider home with profile, trip entry, bookmarks, and recent routes](docs/assets/screenshots/rider-home.jpg) | ![Map-first trip planner](docs/assets/screenshots/rider-plan.jpg) |
 
-| Routes | Community |
+<details>
+<summary><strong>All 10 rider pages</strong></summary>
+
+| Pathfinder | Explore routes |
 | --- | --- |
-| ![Routes](docs/assets/screenshots/rider-routes.png) | ![Community](docs/assets/screenshots/rider-community.png) |
+| ![Journey pathfinder](docs/assets/screenshots/rider-pathfinder.jpg) | ![Searchable route map](docs/assets/screenshots/rider-routes.jpg) |
 
-![Rider guide](docs/assets/screenshots/rider-guide.png)
+| Live route | Community |
+| --- | --- |
+| ![GPS-assisted live route guidance](docs/assets/screenshots/rider-live-route.jpg) | ![Authenticated community board](docs/assets/screenshots/rider-community.jpg) |
+
+| Guide | Account login |
+| --- | --- |
+| ![Rider guide](docs/assets/screenshots/rider-guide.jpg) | ![Rider account login](docs/assets/screenshots/rider-login.jpg) |
+
+| Account recovery | Password reset |
+| --- | --- |
+| ![Rider account recovery](docs/assets/screenshots/rider-recover.jpg) | ![Rider password reset](docs/assets/screenshots/rider-reset.jpg) |
+
+</details>
+
+### Operations dashboard
+
+| Platform home | Observability and alerts |
+| --- | --- |
+| ![Operations dashboard with CPU, memory, database, latency, and alert health](docs/assets/screenshots/admin-dashboard.jpg) | ![Prometheus and Grafana observability view](docs/assets/screenshots/admin-observability.jpg) |
+
+<details>
+<summary><strong>All 6 operations pages</strong></summary>
+
+| Restricted sign-in | Routes |
+| --- | --- |
+| ![Administrator sign-in](docs/assets/screenshots/admin-login.jpg) | ![Route operations list](docs/assets/screenshots/admin-routes.jpg) |
+
+| Route editor | Accounts |
+| --- | --- |
+| ![Road-aligned route editor](docs/assets/screenshots/admin-route-detail.jpg) | ![Account and access visibility](docs/assets/screenshots/admin-accounts.jpg) |
+
+</details>
+
+### Marketing, trust, and build blog
+
+| Product | Developers |
+| --- | --- |
+| ![Tsela product services](docs/assets/screenshots/marketing-services.jpg) | ![Tsela developer platform](docs/assets/screenshots/marketing-developers.jpg) |
+
+<details>
+<summary><strong>All 12 marketing pages</strong></summary>
+
+| About | Brand assets |
+| --- | --- |
+| ![About Tsela](docs/assets/screenshots/marketing-company.jpg) | ![Tsela brand and downloadable icon page](docs/assets/screenshots/marketing-brand.jpg) |
+
+| Build blog | Road-aligned routes article |
+| --- | --- |
+| ![Markdown-backed build blog](docs/assets/screenshots/marketing-journal.jpg) | ![Road-aligned routes development article](docs/assets/screenshots/marketing-journal-road-aligned-routes.jpg) |
+
+| Rider-home article | Privacy policy |
+| --- | --- |
+| ![Rider home development article](docs/assets/screenshots/marketing-journal-rider-home.jpg) | ![Privacy policy](docs/assets/screenshots/marketing-privacy.jpg) |
+
+| Terms of service | Refund policy |
+| --- | --- |
+| ![Terms of service](docs/assets/screenshots/marketing-terms.jpg) | ![Refund policy](docs/assets/screenshots/marketing-refunds.jpg) |
+
+| Cookie policy | Marketing home |
+| --- | --- |
+| ![Cookie policy](docs/assets/screenshots/marketing-cookies.jpg) | ![Marketing home](docs/assets/screenshots/marketing-home.jpg) |
+
+</details>
 
 ## Documentation
 

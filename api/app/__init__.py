@@ -1,1 +1,1 @@
-"""TransitOS API package."""
+"""Tsela API package."""

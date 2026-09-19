@@ -21,6 +21,12 @@ flowchart LR
 
 Run observability as an optional Compose profile during development so idle monitoring does not consume resources on every local run. In production, keep Prometheus, Grafana, the collector, and exporters on a private network; protect Grafana with its own identity and do not expose exporter ports publicly.
 
+### Local observability access
+
+Start the stack with `docker compose --profile observability up -d`. Grafana is available at `http://localhost:3004` and Prometheus at `http://localhost:9090`; both are bound to localhost. The local Grafana username is `admin`. Its password comes from `GRAFANA_ADMIN_PASSWORD` and falls back to `admin` only for local development. Set a non-default value before starting a shared environment. Anonymous Grafana access and self-registration are disabled. Production must inject the password from a secret manager and place Grafana behind the operator identity boundary.
+
+The provisioned **Tsela platform health** dashboard is Grafana's local home dashboard. Its traffic, latency, process-memory, database-memory, database-size, connection, and cache-efficiency panels all query Prometheus. Grafana alert state changes are also sent to the authenticated admin notification feed; the dashboard is the diagnostic source, while the Tsela admin UI is the operator triage surface.
+
 ## What to measure
 
 Instrument at the HTTP boundary around the full request/response so status and elapsed time reflect the endpoint result. FastAPI middleware supports measuring before dispatch and after the response; use a monotonic clock and attach one generated request ID to the response and logs. The same ID becomes the trace correlation field. [FastAPI middleware](https://fastapi.tiangolo.com/tutorial/middleware/)

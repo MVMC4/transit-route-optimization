@@ -2126,3 +2126,63 @@ body { background-color:var(--surface-0); background-image:linear-gradient(rgba(
   .ops-system-pulse > footer { padding: 14px 18px; align-items: flex-start; flex-wrap: wrap; gap: 10px 16px; }
   .ops-system-pulse > footer small { width: 100%; margin-left: 0; }
 }
+
+/* Operations keeps a durable left sidebar on every authenticated screen. */
+.ops-surface .sidebar {
+  position: fixed;
+  z-index: 500;
+  top: 18px;
+  bottom: 18px;
+  left: 18px;
+  width: 238px;
+  height: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  border: 2px solid #111;
+  border-radius: 22px;
+  background: #111;
+  box-shadow: 6px 6px 0 var(--rider-blue);
+  transform: none;
+}
+.ops-surface .sidebar-brand {
+  width: auto;
+  min-height: 88px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.13);
+  color: #fff;
+  text-decoration: none;
+}
+.ops-surface .brand-logo { width: 42px; height: 42px; border: 0; border-radius: 13px; background: #fff; color: #111; box-shadow: none; font: 800 15px var(--font-mono); }
+.ops-surface .brand-name { display: flex; flex-direction: column; color: #fff; font-size: .86rem; line-height: 1.1; }
+.ops-surface .brand-name small { margin-top: 5px; color: rgba(255,255,255,.43); font: 600 .5rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.ops-surface .nav-links { flex: 1; padding: 14px 10px; display: flex; flex-direction: column; justify-content: flex-start; gap: 5px; overflow-y: auto; }
+.ops-surface .nav-links li { min-width: 0; }
+.ops-surface .nav-link { min-height: 48px; margin: 0; padding: 8px 10px; display: flex; flex-direction: row; justify-content: flex-start; gap: 11px; border: 1px solid transparent; border-radius: 11px; color: rgba(255,255,255,.6); font-size: .68rem; font-weight: 700; }
+.ops-surface .nav-icon, .ops-surface .nav-link:hover .nav-icon, .ops-surface .nav-link.active .nav-icon { width: 29px; height: 29px; background: rgba(255,255,255,.08) !important; }
+.ops-surface .nav-icon svg { width: 17px; height: 17px; }
+.ops-surface .nav-link:hover { border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #fff; box-shadow: none; }
+.ops-surface .nav-link.active { border-color: rgba(255,255,255,.2); background: var(--rider-blue); color: #fff; box-shadow: none; }
+.ops-surface .sidebar-footer { width: auto; min-height: 57px; padding: 0 20px; justify-content: flex-start; gap: 9px; border: 0; border-top: 1px solid rgba(255,255,255,.13); }
+.ops-surface .sidebar-footer .status-text { display: inline; color: rgba(255,255,255,.48); font: 600 .55rem var(--font-mono); text-transform: uppercase; }
+.ops-surface .main-content { width: calc(100% - 274px); min-width: 0; min-height: 100vh; margin-left: 274px; padding-bottom: 0; flex: 0 0 calc(100% - 274px); }
+.ops-observability-metrics a small { margin-top: 10px; display: block; color: var(--text-muted); font: .52rem var(--font-mono); line-height: 1.45; }
+
+@media (max-width: 760px) {
+  .ops-surface .sidebar { top: 12px; bottom: 12px; left: 12px; width: 68px; border-radius: 19px; box-shadow: 4px 4px 0 var(--rider-blue); }
+  .ops-surface .sidebar-brand { min-height: 70px; padding: 12px; justify-content: center; }
+  .ops-surface .brand-logo { width: 40px; height: 40px; }
+  .ops-surface .brand-name, .ops-surface .nav-label, .ops-surface .sidebar-footer .status-text { display: none; }
+  .ops-surface .nav-links { padding: 10px 8px; gap: 7px; }
+  .ops-surface .nav-links li { min-width: 0; }
+  .ops-surface .nav-link { min-height: 46px; padding: 7px; justify-content: center; }
+  .ops-surface .nav-icon { width: 30px; height: 30px; }
+  .ops-surface .sidebar-footer { padding: 0; justify-content: center; }
+  .ops-surface .main-content { width: calc(100% - 86px); margin-left: 86px; padding-bottom: 0; flex-basis: calc(100% - 86px); }
+}

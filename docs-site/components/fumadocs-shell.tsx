@@ -8,8 +8,9 @@ import { MARKETING_URL } from "../lib/urls";
 export function FumadocsShell({ children }: { children: ReactNode }) {
   return <DocsLayout
     tree={pageTree}
-    nav={{ title: <span className="fuma-brand"><b>T</b><span>Tsela <small>Developers</small></span></span>, url: "/reference/routes/list" }}
+    nav={{ title: <span className="fuma-brand"><b>T</b><span>Tsela <small>Developers</small></span></span>, url: "/reference" }}
     links={[
+      { type: "main", text: "Overview", url: "/reference" },
       { type: "main", text: "API reference", url: "/reference/routes/list" },
       { type: "main", text: "Production", url: "/reference/guides/production-architecture" },
       { type: "button", text: "Dashboard", url: "/console" },
