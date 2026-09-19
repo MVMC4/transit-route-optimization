@@ -1,9 +1,9 @@
 /** Root marketing layout, metadata, navigation, and footer composition. */
 
 import type { Metadata } from "next";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { SiteFooter } from "../components/site-footer";
 import { SiteHeader } from "../components/site-header";
+import { CookieConsent } from "../components/cookie-consent";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "../lib/site";
 import "./globals.css";
 
@@ -28,6 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        <CookieConsent />
       </body>
     </html>
   );

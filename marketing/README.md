@@ -2,7 +2,7 @@
 
 The editorial Next.js surface on port 3000 demonstrates the rider journey and routes visitors to separate rider, operations, and developer experiences. **Tsela** is the provisional public brand; TransitOS remains the internal platform name until legal and local-language validation is complete.
 
-The homepage route demo uses a locked MapLibre map with OpenStreetMap tiles, hoverable origin and destination points, and the road-aligned Broadhurst-to-Main-Mall geometry returned by the API. The verified route draws progressively with a direction arrow; if the API is unavailable, the map remains visible but no unverified straight-line route is substituted. The surrounding semantic HTML, CSS, and inline SVG show the complete decision sequence—location, destination, route comparison, ride guidance, and community/API feedback.
+The homepage uses a server-rendered SVG route preview instead of downloading an interactive map. It demonstrates the Broadhurst-to-Main-Mall product flow while keeping the marketing route fast, stable, and usable without JavaScript. The full MapLibre experience remains in the rider application, where interaction is valuable.
 
 ## Identity and SEO
 

@@ -1,13 +1,13 @@
 /** Service catalog metadata and separate rider, operations, and developer products. */
 
 import type { Metadata } from "next";
-import { DOCS_URL, OPS_URL, RIDER_URL } from "../../lib/urls";
+import { DOCS_URL, RIDER_URL } from "../../lib/urls";
 
 export const metadata: Metadata = { title: "Product", description: "Explore Tsela's rider trip planner, community-checked network operations, and developer API.", alternates: { canonical: "/services" } };
 
 const services = [
   { number: "01", title: "Rider map", status: "Live preview", copy: "Search every route, choose places directly on the map, widen the search area, and compare journeys that follow the road network.", action: "Plan a journey", href: RIDER_URL, tone: "cobalt" },
-  { number: "02", title: "Network operations", status: "Internal preview", copy: "Review routes, stops, evidence, and coverage in a focused workspace for the people maintaining the network.", action: "Open operations", href: OPS_URL, tone: "orange" },
+  { number: "02", title: "Network operations", status: "Restricted workspace", copy: "Approved operators review routes, stops, evidence, and coverage. This workspace is intentionally absent from the public rider navigation.", action: "Administrator access only", href: null, tone: "orange" },
   { number: "03", title: "Transit data API", status: "Developer preview", copy: "Query routes, road geometry, nearby corridors, and journey options through one straightforward JSON contract.", action: "Read API docs", href: DOCS_URL, tone: "lime" },
 ];
 
@@ -20,7 +20,7 @@ export default function ServicesPage() {
           <article className={`service-row ${service.tone}`} key={service.title}>
             <span className="service-number">{service.number}</span>
             <div><span className="status-label">{service.status}</span><h2>{service.title}</h2><p>{service.copy}</p></div>
-            <a href={service.href}>{service.action} <span>↗</span></a>
+            {service.href ? <a href={service.href}>{service.action} <span>↗</span></a> : <strong>{service.action}</strong>}
           </article>
         ))}
       </section>
