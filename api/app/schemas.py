@@ -185,6 +185,58 @@ class DashboardResponse(ApiModel):
     totals: dict[str, int]
 
 
+class AdminAccountRead(ApiModel):
+    id: int
+    email: str
+    display_name: str = Field(serialization_alias="displayName")
+    created_at: datetime = Field(serialization_alias="createdAt")
+    api_key_count: int = Field(serialization_alias="apiKeyCount")
+    active_api_key_count: int = Field(serialization_alias="activeApiKeyCount")
+    request_count: int = Field(serialization_alias="requestCount")
+    last_request_at: datetime | None = Field(serialization_alias="lastRequestAt")
+
+
+class AdminUsagePathRead(ApiModel):
+    path: str
+    requests: int
+
+
+class GrafanaNotificationRead(ApiModel):
+    id: int
+    state: str
+    severity: str
+    title: str
+    message: str | None
+    dashboard_url: str | None = Field(serialization_alias="dashboardUrl")
+    created_at: datetime = Field(serialization_alias="createdAt")
+
+
+class AdminOverviewResponse(ApiModel):
+    accounts: int
+    active_api_keys: int = Field(serialization_alias="activeApiKeys")
+    requests_24h: int = Field(serialization_alias="requests24h")
+    firing_alerts: int = Field(serialization_alias="firingAlerts")
+    usage_paths: list[AdminUsagePathRead] = Field(serialization_alias="usagePaths")
+    grafana_url: str = Field(serialization_alias="grafanaUrl")
+    prometheus_url: str = Field(serialization_alias="prometheusUrl")
+
+
+class AdminSystemMetrics(ApiModel):
+    api_up: bool | None = Field(serialization_alias="apiUp")
+    api_memory_bytes: float | None = Field(serialization_alias="apiMemoryBytes")
+    api_cpu_cores: float | None = Field(serialization_alias="apiCpuCores")
+    api_open_fds: float | None = Field(serialization_alias="apiOpenFds")
+    request_p95_seconds: float | None = Field(serialization_alias="requestP95Seconds")
+    error_rate_percent: float | None = Field(serialization_alias="errorRatePercent")
+    database_up: bool | None = Field(serialization_alias="databaseUp")
+    database_memory_bytes: float | None = Field(serialization_alias="databaseMemoryBytes")
+    database_size_bytes: float | None = Field(serialization_alias="databaseSizeBytes")
+    database_connections: float | None = Field(serialization_alias="databaseConnections")
+    database_cache_hit_percent: float | None = Field(serialization_alias="databaseCacheHitPercent")
+    prometheus_reachable: bool = Field(serialization_alias="prometheusReachable")
+    collected_at: datetime = Field(serialization_alias="collectedAt")
+
+
 class DeveloperRegisterRequest(ApiModel):
     email: str = Field(min_length=5, max_length=254)
     password: str = Field(min_length=10, max_length=200)

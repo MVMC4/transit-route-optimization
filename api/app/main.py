@@ -3,9 +3,20 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from prometheus_client import make_asgi_app
 
 from app.config import get_settings
-from app.routers import community, dashboard, developer, health, pathfinding, public_v1, routes
+from app.metrics import metrics_middleware
+from app.routers import (
+    admin,
+    community,
+    dashboard,
+    developer,
+    health,
+    pathfinding,
+    public_v1,
+    routes,
+)
 
 settings = get_settings()
 
@@ -26,12 +37,15 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
+app.include_router(admin.router)
 app.include_router(routes.router)
 app.include_router(pathfinding.router)
 app.include_router(dashboard.router)
 app.include_router(community.router)
 app.include_router(developer.router)
 app.include_router(public_v1.router)
+app.middleware("http")(metrics_middleware)
+app.mount("/metrics", make_asgi_app())
 
 
 @app.middleware("http")

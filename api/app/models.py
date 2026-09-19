@@ -195,3 +195,22 @@ class CommunityPost(Base):
     )
 
     account: Mapped[DeveloperAccount] = relationship(back_populates="community_posts")
+
+
+class GrafanaNotification(Base):
+    """Durable alert notification delivered by the provisioned Grafana webhook."""
+
+    __tablename__ = "GrafanaNotification"
+    __table_args__ = (Index("ix_grafana_notification_state_time", "state", "createdAt"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    fingerprint: Mapped[str | None] = mapped_column(String(160), index=True)
+    state: Mapped[str] = mapped_column(String(30), nullable=False, default="firing")
+    severity: Mapped[str] = mapped_column(String(30), nullable=False, default="warning")
+    title: Mapped[str] = mapped_column(String(180), nullable=False)
+    message: Mapped[str | None] = mapped_column(Text)
+    dashboard_url: Mapped[str | None] = mapped_column("dashboardUrl", String(500))
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        "createdAt", DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

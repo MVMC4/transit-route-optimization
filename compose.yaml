@@ -31,6 +31,10 @@ services:
       DEMO_ACCOUNT_ENABLED: "true"
       DEMO_ACCOUNT_EMAIL: demo@tsela.local
       DEMO_ACCOUNT_PASSWORD: TselaDemo2026!
+      GRAFANA_WEBHOOK_SECRET: ${GRAFANA_WEBHOOK_SECRET:-local-grafana-webhook}
+      GRAFANA_PUBLIC_URL: http://localhost:3004
+      PROMETHEUS_PUBLIC_URL: http://localhost:9090
+      PROMETHEUS_INTERNAL_URL: http://prometheus:9090
     ports:
       - "8000:8000"
     depends_on:
@@ -92,6 +96,57 @@ services:
       api:
         condition: service_healthy
 
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: transit-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres-exporter:
+        condition: service_started
+
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: transit-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: postgresql://transitsym:metro@db:5432/transit?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    container_name: transit-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SERVER_ROOT_URL: http://localhost:3004
+      GRAFANA_WEBHOOK_SECRET: ${GRAFANA_WEBHOOK_SECRET:-local-grafana-webhook}
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3004:3000"
+    depends_on:
+      - prometheus
+
   docs:
     build:
       context: ./docs-site
@@ -119,3 +174,5 @@ services:
 
 volumes:
   transit_system:
+  prometheus_data:
+  grafana_data:

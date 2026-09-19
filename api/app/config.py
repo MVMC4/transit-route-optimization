@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     demo_account_email: str = "demo@tsela.local"
     demo_account_password: str = "TselaDemo2026!"
     demo_account_name: str = "Tsela Demo"
+    grafana_webhook_secret: str = "local-grafana-webhook"
+    grafana_public_url: str = "http://localhost:3004"
+    prometheus_public_url: str = "http://localhost:9090"
+    prometheus_internal_url: str = "http://prometheus:9090"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

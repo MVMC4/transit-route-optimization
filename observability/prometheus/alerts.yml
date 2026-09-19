@@ -1,0 +1,32 @@
+groups:
+  - name: tsela-platform
+    rules:
+      - alert: TselaApiDown
+        expr: up{job="tsela-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Tsela API is unavailable
+          description: Prometheus has been unable to scrape the API for one minute.
+      - alert: TselaApiHighErrorRate
+        expr: |
+          sum(rate(tsela_http_requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(tsela_http_requests_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Tsela API error rate is above 5%
+          description: Server errors have exceeded the five-percent threshold for five minutes.
+      - alert: TselaApiSlowP95
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(tsela_http_request_duration_seconds_bucket[5m]))) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Tsela API p95 latency is above one second
+          description: The 95th percentile API latency has remained above one second for five minutes.
