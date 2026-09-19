@@ -17,6 +17,7 @@
 - [Integrations and self-hosted work management](INTEGRATIONS_AND_WORK_MANAGEMENT.md)
 - [Launch checklist](LAUNCH_CHECKLIST.md)
 - [Work order and acceptance criteria](WORK_ORDER.md)
+- [Conversation-to-work-order audit](WORK_ORDER_AUDIT.md)
 - [Brand direction](BRAND.md)
 - [Cost and capacity](COST_AND_CAPACITY.md)
 - [Seed data and provenance](SEED_DATA.md)
