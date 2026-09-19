@@ -104,6 +104,53 @@ export interface ApiHealth {
   };
 }
 
+export interface AdminOverview {
+  accounts: number;
+  activeApiKeys: number;
+  requests24h: number;
+  firingAlerts: number;
+  usagePaths: Array<{ path: string; requests: number }>;
+  grafanaUrl: string;
+  prometheusUrl: string;
+}
+
+export interface AdminAccount {
+  id: number;
+  email: string;
+  displayName: string;
+  createdAt: string;
+  apiKeyCount: number;
+  activeApiKeyCount: number;
+  requestCount: number;
+  lastRequestAt: string | null;
+}
+
+export interface GrafanaNotification {
+  id: number;
+  state: string;
+  severity: string;
+  title: string;
+  message: string | null;
+  dashboardUrl: string | null;
+  createdAt: string;
+}
+
+export interface AdminSystemMetrics {
+  apiUp: boolean | null;
+  apiMemoryBytes: number | null;
+  apiCpuCores: number | null;
+  apiOpenFds: number | null;
+  requestP95Seconds: number | null;
+  errorRatePercent: number | null;
+  databaseUp: boolean | null;
+  databaseMemoryBytes: number | null;
+  databaseSizeBytes: number | null;
+  databaseConnections: number | null;
+  databaseCacheHitPercent: number | null;
+  prometheusReachable: boolean;
+  collectedAt: string;
+}
+
 // ── API methods ──────────────────────────────────────────────────────────────
 export const apiClient = {
   routes: {
@@ -178,6 +225,12 @@ export const apiClient = {
   },
   health: {
     check: () => request<ApiHealth>("/api/health", { cache: "no-store" }),
+  },
+  admin: {
+    overview: () => request<AdminOverview>("/api/admin/overview", { cache: "no-store" }),
+    system: () => request<AdminSystemMetrics>("/api/admin/system", { cache: "no-store" }),
+    accounts: () => request<AdminAccount[]>("/api/admin/accounts", { cache: "no-store" }),
+    notifications: () => request<GrafanaNotification[]>("/api/admin/notifications", { cache: "no-store" }),
   },
 };
 

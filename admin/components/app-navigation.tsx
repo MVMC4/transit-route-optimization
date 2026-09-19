@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type IconName = "overview" | "routes" | "pathfind" | "dashboard" | "docs" | "guide";
+type IconName = "overview" | "routes" | "pathfind" | "dashboard" | "docs" | "guide" | "accounts" | "alerts";
 
 const items: Array<{ href: string; label: string; icon: IconName }> = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/routes", label: "Routes", icon: "routes" },
+  { href: "/accounts", label: "Accounts", icon: "accounts" },
+  { href: "/observability", label: "Alerts", icon: "alerts" },
 ];
 
 function NavIcon({ name }: { name: IconName }) {
@@ -18,6 +20,8 @@ function NavIcon({ name }: { name: IconName }) {
     dashboard: <><path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-3H4zM14 7h6V4h-6z" /></>,
     docs: <><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v5h5M9 13h6M9 17h6" /></>,
     guide: <><circle cx="12" cy="12" r="9" /><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-.9.5-1.4 1-1.4 2.2M12 17h.01" /></>,
+    accounts: <><circle cx="9" cy="9" r="3"/><circle cx="17" cy="8" r="2"/><path d="M4 19c.4-4 2.2-6 5-6s4.6 2 5 6M14 13c3 0 5 1.7 5.5 5"/></>,
+    alerts: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></>,
   };
 
   return (
@@ -36,11 +40,6 @@ export function AppNavigation() {
 
   return (
     <nav className="sidebar" aria-label="Primary navigation">
-      <Link href="/dashboard" className="sidebar-brand" aria-label="TransitOS operations dashboard">
-        <span className="brand-logo">T</span>
-        <span className="brand-name">Operations</span>
-      </Link>
-
       <ul className="nav-links">
         {items.map((item) => (
           <li key={item.href}>
@@ -56,12 +55,7 @@ export function AppNavigation() {
         ))}
       </ul>
 
-      <div className="sidebar-footer">
-        <span className="status-pip" />
-        <span className="status-text">Gaborone network</span>
-        <a href="http://localhost:3002" className="ops-exit">Rider app</a>
-        <a href="http://localhost:3003" className="ops-exit">API docs</a>
-      </div>
+      <div className="sidebar-footer"><span className="status-pip" /><span className="status-text">Live</span></div>
     </nav>
   );
 }

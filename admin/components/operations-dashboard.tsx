@@ -4,7 +4,14 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { apiClient, ApiHealth, DashboardData, HealthStatus } from "@/lib/api-client";
+import {
+  AdminOverview,
+  AdminSystemMetrics,
+  apiClient,
+  ApiHealth,
+  DashboardData,
+  HealthStatus,
+} from "@/lib/api-client";
 import { DraftStop, RouteBuilderMap } from "@/components/route-builder-map";
 
 const AUTO_REFRESH_MS = 10000;
@@ -22,6 +29,23 @@ function relativeTime(date: Date | null): string {
   return `Updated ${Math.floor(seconds / 60)}m ago`;
 }
 
+function formatBytes(value: number | null): string {
+  if (value == null) return "Awaiting data";
+  if (value < 1024) return `${Math.round(value)} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let scaled = value / 1024;
+  let unit = 0;
+  while (scaled >= 1024 && unit < units.length - 1) {
+    scaled /= 1024;
+    unit += 1;
+  }
+  return `${scaled.toFixed(scaled >= 100 ? 0 : 1)} ${units[unit]}`;
+}
+
+function formatPercent(value: number | null): string {
+  return value == null || !Number.isFinite(value) ? "Awaiting data" : `${value.toFixed(2)}%`;
+}
+
 function HealthItem({ label, status, detail }: { label: string; status: HealthStatus; detail?: string }) {
   const healthy = status === "healthy";
   return <div className="ops-health-item"><i className={healthy ? "healthy" : "degraded"} /><span><strong>{label}</strong><small>{detail || "Responding"}</small></span><em>{healthy ? "Operational" : "Degraded"}</em></div>;
@@ -30,6 +54,8 @@ function HealthItem({ label, status, detail }: { label: string; status: HealthSt
 export function OperationsDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [health, setHealth] = useState<ApiHealth | null>(null);
+  const [platformOverview, setPlatformOverview] = useState<AdminOverview | null>(null);
+  const [system, setSystem] = useState<AdminSystemMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -65,13 +91,31 @@ export function OperationsDashboard() {
     catch (loadError: unknown) { setHealthError(errorMessage(loadError, "Health check unavailable")); }
   }, []);
 
+  const loadOperations = useCallback(async () => {
+    try {
+      const [overview, metrics] = await Promise.all([
+        apiClient.admin.overview(),
+        apiClient.admin.system(),
+      ]);
+      setPlatformOverview(overview);
+      setSystem(metrics);
+    } catch {
+      setSystem(null);
+    }
+  }, []);
+
   useEffect(() => { void loadDashboard(); }, [loadDashboard]);
   useEffect(() => { void loadHealth(); }, [loadHealth]);
+  useEffect(() => { void loadOperations(); }, [loadOperations]);
   useEffect(() => {
     if (!autoRefresh) return;
-    const timer = window.setInterval(() => { void loadDashboard(false, true); void loadHealth(); }, AUTO_REFRESH_MS);
+    const timer = window.setInterval(() => {
+      void loadDashboard(false, true);
+      void loadHealth();
+      void loadOperations();
+    }, AUTO_REFRESH_MS);
     return () => window.clearInterval(timer);
-  }, [autoRefresh, loadDashboard, loadHealth]);
+  }, [autoRefresh, loadDashboard, loadHealth, loadOperations]);
   useEffect(() => {
     if (!builderOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") { setBuilderOpen(false); setRouteNotice(""); } };
@@ -125,11 +169,29 @@ export function OperationsDashboard() {
     <section className="ops-control-strip" aria-label="Dashboard refresh controls">
       <div className="ops-live-copy"><i className={health?.status === "healthy" ? "healthy" : "checking"} /><span><strong>{health?.status === "healthy" ? "Network services online" : "Checking network services"}</strong><small>{relativeTime(lastUpdated)}</small></span></div>
       <label className="ops-refresh-toggle"><input type="checkbox" checked={autoRefresh} onChange={(event) => setAutoRefresh(event.target.checked)} /><span /> Auto-refresh</label>
-      <button className="btn btn-secondary btn-sm" disabled={refreshing} onClick={() => { void loadDashboard(true); void loadHealth(); }}>{refreshing ? "Refreshing…" : "Refresh now"}</button>
+      <button className="btn btn-secondary btn-sm" disabled={refreshing} onClick={() => { void loadDashboard(true); void loadHealth(); void loadOperations(); }}>{refreshing ? "Refreshing…" : "Refresh now"}</button>
     </section>
 
     {error && <div className="alert alert-error ops-alert"><span><b>Data unavailable.</b> {error}</span><button className="btn btn-secondary btn-sm" onClick={() => void loadDashboard(true)}>Try again</button></div>}
     {routeNotice && !builderOpen && <div className="alert alert-success ops-alert"><span>{routeNotice}</span><button onClick={() => setRouteNotice("")} aria-label="Dismiss route notice">×</button></div>}
+
+    <section className="ops-system-pulse" aria-label="Platform resource usage">
+      <header>
+        <div><span className="panel-kicker">LIVE PLATFORM PULSE</span><h2>Capacity and reliability</h2></div>
+        <div className="ops-system-links"><Link href="/observability">All alerts</Link><a href={platformOverview?.grafanaUrl ?? "http://localhost:3004"} target="_blank" rel="noreferrer">Open Grafana ↗</a></div>
+      </header>
+      <div className="ops-system-grid">
+        <article><span>API memory</span><strong>{formatBytes(system?.apiMemoryBytes ?? null)}</strong><small>Resident RAM in use</small></article>
+        <article><span>CPU load</span><strong>{system?.apiCpuCores == null ? "Awaiting data" : `${(system.apiCpuCores * 100).toFixed(1)}%`}</strong><small>Five-minute process rate</small></article>
+        <article><span>DB cache memory</span><strong>{formatBytes(system?.databaseMemoryBytes ?? null)}</strong><small>Allocated shared buffers</small></article>
+        <article><span>DB connections</span><strong>{system?.databaseConnections == null ? "—" : Math.round(system.databaseConnections)}</strong><small>Open application sessions</small></article>
+        <article><span>Request p95</span><strong>{system?.requestP95Seconds == null ? "Awaiting data" : `${Math.round(system.requestP95Seconds * 1000)} ms`}</strong><small>Five-minute latency</small></article>
+        <article><span>Error rate</span><strong>{formatPercent(system?.errorRatePercent ?? null)}</strong><small>HTTP 5xx responses</small></article>
+        <article><span>Database storage</span><strong>{formatBytes(system?.databaseSizeBytes ?? null)}</strong><small>PostgreSQL data consumed</small></article>
+        <article className={platformOverview?.firingAlerts ? "is-alerting" : "is-healthy"}><span>Active alerts</span><strong>{platformOverview?.firingAlerts ?? 0}</strong><small>{system?.prometheusReachable ? "Prometheus connected" : "Prometheus reconnecting"}</small></article>
+      </div>
+      <footer><span><i className={system?.apiUp ? "healthy" : "checking"} /> API {system?.apiUp ? "up" : "pending"}</span><span><i className={system?.databaseUp ? "healthy" : "checking"} /> Database {system?.databaseUp ? "up" : "pending"}</span><span>{system?.apiOpenFds == null ? "File descriptors pending" : `${Math.round(system.apiOpenFds)} open file descriptors`}</span><small>Collected {system ? new Date(system.collectedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "when telemetry connects"}</small></footer>
+    </section>
 
     {loading ? <section className="ops-metric-grid" aria-label="Loading network totals">{[0, 1, 2, 3].map((item) => <div className="ops-metric skeleton-block" key={item} />)}</section> : <section className="ops-metric-grid" aria-label="Network totals">
       <article className="ops-metric"><span>01 · Routes</span><strong>{totalRoutes}</strong><p>Published corridors</p></article>
