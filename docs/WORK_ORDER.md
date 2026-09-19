@@ -1,6 +1,6 @@
 # Work order: Tsela product and production foundation
 
-**Status:** Active plan. UI and developer portal changes are implemented in the current feature branch; production identity and observability remain planned work.
+**Status:** Active plan. UI, protected Fumadocs, API-key rotation/revocation, and the local observability stack are implemented in the current feature branch. Production identity, high availability, object uploads, and deployed backup infrastructure remain launch work.
 
 **Verified 2026-09-18 (commit pass for this branch):** `admin`, `marketing`, `rider`, and `docs-site` each build clean with `next build`; ESLint is clean except one pre-existing informational warning in `docs-site/postcss.config.mjs` (anonymous default export, not worth restructuring). `api` passes its full pytest suite (18 tests) and is clean under `ruff check`. No functional gaps were found beyond what this document already lists as remaining work. Two items are still open from this pass specifically: the root README has no real screenshot/GIF yet (placeholder comment left in place — capturing one needs the full Compose stack running, which wasn't done in this session), and `.github/PULL_REQUEST_TEMPLATE.md`, `LICENSE` (MIT), and `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1) were added but have not been exercised by a real PR yet.
 
@@ -18,6 +18,9 @@ Deliver a Gaborone-first combi discovery product with trustworthy road-following
 - Disabled FastAPI's public Swagger, ReDoc, and OpenAPI routes by default; the editorial reference is the developer documentation surface.
 - Added local API keys, account recovery scaffolding, route contributions, map-based rider and operator surfaces, and starter Gaborone route data.
 - Added root architecture, security, contributing, service-area, route-lifecycle, and product notes.
+- Added protected production runbooks for topology, 04:00 logical archives, WAL/PITR recovery, S3-compatible uploads, Supabase/Google auth, Grafana/OpenProject operations, and launch approval.
+- Added API-key rotation and revocation actions to the console, including one-time `.env` download for the replacement secret.
+- Added reviewed pgBackRest, logical-backup, and systemd timer examples under `ops/backups`; these remain examples until provisioned and restore-tested on production hosts.
 
 ## Remaining work orders
 
@@ -31,10 +34,10 @@ Deliver a Gaborone-first combi discovery product with trustworthy road-following
 
 ### P1 — API lifecycle and observability
 
-- Define API-key lifecycle states and add expiry, last-used timestamp, scopes, owner actions, rotation lineage, and audited revocation.
+- Extend the implemented create/rotate/revoke owner actions with expiry, last-used timestamp, scopes, rotation lineage, and an exported audit trail.
 - Record one usage event per accepted key request with a normalized route template, final HTTP status, latency, and request ID. Preserve quota accounting separately from operational metrics.
 - Move hourly invalid-credential and API-key limits to a shared gateway or Redis before running multiple API replicas.
-- Add the optional Prometheus/Grafana/OpenTelemetry stack described in [Observability and authentication architecture](OBSERVABILITY_AND_AUTH.md).
+- Add OpenTelemetry tracing and durable production metric retention to the implemented Prometheus/Grafana development stack.
 - Establish baseline latency/error/service-availability SLIs before setting production SLO targets. Add alerts only when an owner and response action are defined.
 
 ### P1 — route trust and rider completion

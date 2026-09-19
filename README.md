@@ -47,6 +47,12 @@ Real captures from the running Compose stack, not mockups.
 - [Gaborone starter data](docs/SEED_DATA.md) — seeded corridors, coordinates, provenance, and accuracy limits
 - [Product vision](docs/PRODUCT_VISION.md) — five product surfaces, rider UX, field capture, community data, USSD, and partner integrations
 - [Authentication decision](docs/AUTH_DECISION.md) — Supabase, Better Auth, and Google trade-offs
+- [Production architecture](docs/PRODUCTION_ARCHITECTURE.md) — deployment topology, data flows, availability, and honest readiness status
+- [Backup and disaster recovery](docs/BACKUP_AND_DISASTER_RECOVERY.md) — replicas, WAL, 04:00 tar archives, PITR, and restore drills
+- [Object storage](docs/OBJECT_STORAGE.md) — S3-compatible uploads, signed URLs, validation, and retention
+- [Production authentication](docs/PRODUCTION_AUTH.md) — self-hosted Supabase Auth, Google OAuth, JWT, and migration path
+- [Operations integrations](docs/INTEGRATIONS_AND_WORK_MANAGEMENT.md) — Grafana notifications and OpenProject as a self-hosted Jira alternative
+- [Launch checklist](docs/LAUNCH_CHECKLIST.md) — the evidence required before this can be called production-ready
 - [Brand direction](docs/BRAND.md) — Tsela naming and draft visual system
 - [Cost and capacity](docs/COST_AND_CAPACITY.md) — hourly limits and measurement model
 - [Community service area](docs/SERVICE_AREA.md) — contribution bounds, enforcement, and polygon migration note
@@ -176,6 +182,7 @@ rider/      Public Next.js rider application (port 3002)
 docs-site/  Next.js developer portal, authenticated Fumadocs reference, and access console
 database/   PostgreSQL/PostGIS/pgRouting image
 observability/ Prometheus rules plus provisioned Grafana dashboards and alerts
+ops/        Reviewed production-operation examples for backup and recovery
 docs/       API gateway, backend, and frontend guides
 compose.yaml
 ```
